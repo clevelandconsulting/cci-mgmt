@@ -1,11 +1,11 @@
 {
-  "name": "lineman-angular-default",
+  "name": "cci-mgmt",
   "title": "An HTML/JS/CSS app",
   "version": "0.0.1",
   "private": true,
   "author": {
-    "name": "John Doe",
-    "company": "ACME, Inc."
+    "name": "Kevin Vile",
+    "company": "Cleveland Consulting, Inc."
   },
   "devDependencies": {
     "lineman": "~0.24.10",
