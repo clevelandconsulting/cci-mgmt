@@ -1,13 +1,11 @@
 {
-  "name": "lineman-angular-default",
+  "name": "cci-mgmt",
   "version": "0.0.1",
   "dependencies": {
     "angular": "~1.2.14",
     "angular-route": "~1.2.14",
-    "underscore": "~1.6.0"
-  },
-  "resolutions": {
-    "angular": "~1.2.14"
+    "underscore": "~1.6.0",
+    "foundation": "zurb/bower-foundation"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.13"

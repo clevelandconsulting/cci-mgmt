@@ -36,7 +36,19 @@ module.exports = function(lineman) {
     // have Ruby installed as well as the `sass` gem. To enable it, comment out the
     // following line:
     //
-    // enableSass: true
+     enableSass: true,
+     
+     sass: {
+	     compile: {
+		     options: {
+			     loadPath: [
+			     	"vendor/css",
+			     	"vendor/bower/foundation/scss",
+			     	"app/css"
+			     ]
+		     }
+	     }
+     }
 
     // Asset Fingerprints
     //
@@ -48,3 +60,9 @@ module.exports = function(lineman) {
 
   };
 };
+
+/*
+module.exports = require(process.env['LINEMAN_MAIN']).config.extend('application', {
+  enableSass: true
+});
+*/

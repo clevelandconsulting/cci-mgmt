@@ -15,12 +15,16 @@ module.exports = function(lineman) {
     coffee: {
 	    app: [
     	 	"app/js/main.coffee",
+    	 	"app/js/factories/**/*.coffee",
+    	 	"app/js/services/**/*.coffee",
     	 	"app/js/**/*.coffee"
     	]
     },
     js: {
     	vendor: [
-    	    "vendor/underscore/underscore.js",
+    	    "vendor/bower/jquery/dist/jquery.min.js",
+    	    "vendor/bower/underscore/underscore.js",
+    	    "vendor/bower/foundation/js/foundation.min.js",
 			"vendor/bower/angular/angular.js",
 			"vendor/js/**/*.js"  //Note that this glob remains for traditional vendor libs
 		],
@@ -28,6 +32,12 @@ module.exports = function(lineman) {
 		    "vendor/bower/angular-mocks/angular-mocks.js",
 			"spec/helpers/**/*.js"
 		]
+    },
+    sass: {
+	  vendor: [
+	  	"vendor/bower/foundation/scss/normalize.scss",
+	  	"vendor/bower/foundation/scss/foundation.scss"
+	  ]  
     }
     
   };
