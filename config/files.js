@@ -25,6 +25,8 @@ module.exports = function(lineman) {
     	    "vendor/bower/jquery/dist/jquery.min.js",
     	    "vendor/bower/underscore/underscore.js",
     	    "vendor/bower/foundation/js/foundation.min.js",
+    	    "vendor/bower/amplify/lib/amplify.js",
+    	    "vendor/bower/amplify/lib/amplify.store.js",
 			"vendor/bower/angular/angular.js",
 			"vendor/js/**/*.js"  //Note that this glob remains for traditional vendor libs
 		],

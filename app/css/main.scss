@@ -1,0 +1,5 @@
+@import "foundation.scss";
+
+.custom-side-nav {
+  @include side-nav();
+}

@@ -5,7 +5,8 @@
     "angular": "~1.2.14",
     "angular-route": "~1.2.14",
     "underscore": "~1.6.0",
-    "foundation": "zurb/bower-foundation"
+    "foundation": "zurb/bower-foundation",
+    "amplify": "~1.1.x"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.13"
