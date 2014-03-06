@@ -1,17 +1,25 @@
-angular.module('app').service 'apiService', ['$http', ($http) ->
- url = "https://fms.clevelandconsulting.com/RESTfm/"
- username = "Developer"
- password = ""
+angular.module('app').service 'apiService', ['$http', '$rootScope', class apiService
+ constructor: ($http, $rootScope) -> 
+  @url = '' 
+  @credentials = ''
+  @validated = false
+  @http = $http
+  #@http({method: 'GET', url: @url + "?RFMkey=cci-developer"})
   
-
- #$http.defaults.headers.common = {"Access-Control-Request-Headers": "accept, origin, authorization"};
- $http.defaults.headers.common['Authorization'] = 'Basic ' + Base64.encode username + ':' + password
+ setUrl: (@url) ->
+ 
+ setCredentials: (@credentials) ->
   
- $http({method: 'GET', url: url}).
-   success (data, status, headers, config) =>
-    @result = data
-    console.log data
-   .error (data, status, headers, config) =>
-    console.log data
-
+ isValidated: -> @validated 
+  
+ checkCredentials: (credentials) ->
+  @http.defaults.headers.common['Authorization'] = 'Basic ' + credentials
+  @http({method: 'GET', url: @url})
+   .success( (data,status,headers,config) => 
+    @validated = true
+    @setCredentials credentials 
+   )
+   .error (data,status,headers,config) => 
+    @validated = false
+    @setCredentials '' 
 ]
