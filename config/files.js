@@ -15,6 +15,9 @@ module.exports = function(lineman) {
     coffee: {
 	    app: [
     	 	"app/js/main.coffee",
+    	 	"app/js/services/amplifyService.coffee",
+    	 	"app/js/services/storageService.coffee",
+    	 	"app/js/services/credentialService.coffee",
     	 	"app/js/factories/**/*.coffee",
     	 	"app/js/services/**/*.coffee",
     	 	"app/js/**/*.coffee"
@@ -22,6 +25,7 @@ module.exports = function(lineman) {
     },
     js: {
     	vendor: [
+    	    "vendor/bower/js-base64/base64.min.js",
     	    "vendor/bower/jquery/dist/jquery.min.js",
     	    "vendor/bower/underscore/underscore.js",
     	    "vendor/bower/foundation/js/foundation.min.js",
