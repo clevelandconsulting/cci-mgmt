@@ -59,6 +59,9 @@ angular.module('app').service 'authorizationService', ['$q', 'credentialStorageS
    if response.status != 401
     #set an error if we didn't get the expected 401
     @lastError = response.status
+   if response.status != 500
+    @credentialStorageService.clear()
+   
    @deferred.reject false
    
   @apiService.checkCredentials(credentials).then success, failure

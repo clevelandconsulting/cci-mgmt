@@ -13,9 +13,9 @@ angular.module('app').service 'credentialStorageService', [ 'storageService', cl
     cred
    else
     ''
-    
-  save: (credentials) ->
-   @storageService.store('credentials', credentials)
+  clear: -> @save('')
+   
+  save: (credentials) -> @storageService.store('credentials', credentials)
   
 ]  
 # new credentialStorageService()
