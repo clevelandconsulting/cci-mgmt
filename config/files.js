@@ -28,26 +28,31 @@ module.exports = function(lineman) {
     },
     js: {
     	vendor: [
-    	    "vendor/bower/js-base64/base64.min.js",
-    	    "vendor/bower/jquery/dist/jquery.min.js",
+    	    "vendor/bower/js-base64/base64.js",
+    	    "vendor/bower/jquery/dist/jquery.js",
+    	    "vendor/bower/toastr/toastr.js",
     	    "vendor/bower/underscore/underscore.js",
-    	    "vendor/bower/foundation/js/foundation.min.js",
+    	    "vendor/bower/foundation/js/foundation.js",
     	    "vendor/bower/amplify/lib/amplify.js",
     	    "vendor/bower/amplify/lib/amplify.store.js",
-			"vendor/bower/angular/angular.js",
-			"vendor/js/**/*.js"  //Note that this glob remains for traditional vendor libs
-		],
-		specHelpers: [
-		    "vendor/bower/angular-mocks/angular-mocks.js",
-			"spec/helpers/**/*.js"
-		]
+         "vendor/bower/angular/angular.js",
+         "vendor/js/**/*.js"  //Note that this glob remains for traditional vendor libs
+     ],
+     specHelpers: [
+		       "vendor/bower/angular-mocks/angular-mocks.js",
+         "spec/helpers/**/*.js"
+     ]
     },
     sass: {
-	  vendor: [
-	  	"vendor/bower/foundation/scss/normalize.scss",
-	  	"vendor/bower/foundation/scss/foundation.scss"
-	  ]  
+      vendor: [
+         "vendor/bower/foundation/scss/normalize.scss",
+         "vendor/bower/foundation/scss/foundation.scss"
+      ]  
+    },
+    css: {
+      vendor: [
+         "vendor/bower/toastr/toastr.css"
+      ]
     }
-    
   };
 };

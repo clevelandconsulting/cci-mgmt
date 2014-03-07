@@ -1,16 +1,22 @@
-angular.module('app').controller 'loginController', [ 'restFMAuthorization', '$scope', 
+angular.module('app').controller 'loginController', [ 'restFMAuthorization', 'notifications', '$scope', '$location'
  class loginController 
-  constructor: (@auth, @scope) ->
+  constructor: (@auth, @notifications, @scope, @location) ->
    @username=''
    @password=''
   
   login: ->
-   success = (response) => @flash = 'Welcome ' + @username + '!'
+   @loginToastr = @notifications.info 'Logging In...'
+   success = (response) => 
+    @notifications.clear(@loginToastr)
+    @notifications.success 'Welcome ' + @username + '!'
+ 
+    @location.path('/home')
    failure = (response) => 
+    @notifications.clear(@loginToastr)
     if @auth.lastError == 500
-     @flash = "Oops, something went wrong! It's our fault not yours. Shoot us an email if this keeps happening!"
+     @notifications.error "Oops, something went wrong! It's our fault not yours. Shoot us an email if this keeps happening!"
     else
-     @flash = "That's not a valid username and password."
+     @notifications.error "That's not a valid username and password."
     
    @auth.doLogin(@username,@password).then success, failure
    

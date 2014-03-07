@@ -7,7 +7,8 @@
     "underscore": "~1.6.0",
     "foundation": "zurb/bower-foundation",
     "amplify": "~1.1.x",
-    "js-base64": "2.1.2"
+    "js-base64": "2.1.2",
+    "toastr": "~2.0.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.13"
