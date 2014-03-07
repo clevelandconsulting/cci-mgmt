@@ -18,8 +18,11 @@ module.exports = function(lineman) {
     	 	"app/js/services/amplifyService.coffee",
     	 	"app/js/services/storageService.coffee",
     	 	"app/js/services/credentialService.coffee",
+    	 	"app/js/services/apiService.coffee",
+    	 	"app/js/services/authorizationService.coffee",
     	 	"app/js/factories/**/*.coffee",
     	 	"app/js/services/**/*.coffee",
+    	 	"app/js/controllers/**/*.coffee",
     	 	"app/js/**/*.coffee"
     	]
     },

@@ -1,11 +1,18 @@
 angular.module('app').service 'authorizationService', ['$q', 'credentialStorageService','apiService', class authorizationService
  constructor: (@$q, @credentialStorageService,@apiService) ->
+  @lastError = 0
  
+ apiUrl: (url) ->
+  @apiService.setUrl(url) 
+  
  checkIfLoggedIn: -> @apiService.isValidated()
  
  getStoredCredentials: -> @credentialStorageService.get()
  
- allowedAccess: -> 
+ allowedAccess: ->
+  #clear any previous error 
+  @lastError = 0
+ 
   #start by creating a deferred promise
   @deferred = @$q.defer()
   
@@ -15,11 +22,16 @@ angular.module('app').service 'authorizationService', ['$q', 'credentialStorageS
   if !loggedIn
    #if they're not logged in, check to see if they have any stored credentials
    credentials = @getStoredCredentials()
-    
    if credentials != ''  
     #if they have stored credentials, check the api service to see if the credentials are valid
-    success = (data) => @deferred.resolve true
-    failure = (data) => @deferred.reject false
+    success = (response) => 
+     @deferred.resolve true
+    failure = (response) => 
+     if response.status != 401
+      #set an error if we didn't get the expected 401
+      @lastError = response.status
+     @deferred.reject false
+          
     @apiService.checkCredentials(credentials).then success, failure
     
    else
@@ -30,6 +42,27 @@ angular.module('app').service 'authorizationService', ['$q', 'credentialStorageS
    @deferred.resolve true
    
   #return the promise 
+  @deferred.promise
+
+ doLogin: (username,password) ->
+  #clear any previous error 
+  @lastError = 0 
+ 
+  @deferred = @$q.defer()
+  
+  credentials = @credentialStorageService.form(username,password)
+  
+  success = (response) =>
+   @credentialStorageService.save(credentials)  
+   @deferred.resolve true
+  failure = (response) =>
+   if response.status != 401
+    #set an error if we didn't get the expected 401
+    @lastError = response.status
+   @deferred.reject false
+   
+  @apiService.checkCredentials(credentials).then success, failure
+  
   @deferred.promise
 
 ]

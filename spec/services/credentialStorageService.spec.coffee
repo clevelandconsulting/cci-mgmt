@@ -20,7 +20,7 @@ describe "credentialStorageService", ->
  
  Then -> expect(@subject).toBeDefined()
  
- describe "Form()", ->
+ describe "form()", ->
    
   describe "with a username and password", ->
    Given -> 
@@ -89,7 +89,7 @@ describe "credentialStorageService", ->
    @password = 'bar'
    @credentials = @authorizationCredentials(@username,@password)
    
-  When -> @result = @subject.save(@username,@password)
+  When -> @result = @subject.save(@credentials)
   Then -> expect(@mockStorageService.store).toHaveBeenCalledWith('credentials',@credentials)
   
   

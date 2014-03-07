@@ -1,14 +1,16 @@
-angular.module('app').controller 'testController', ['apiService', '$scope', (apiService, $scope) ->
+angular.module('app').controller 'testController', ['apiService', 'restFMAuthorization', '$scope', (apiService, auth, $scope) ->
   $scope.result = 'TESTING'
-  apiService.setUrl('https://fms.clevelandconsulting.com/RESTfm/CCI_Mgmt/')
   username = 'Developer'
   password = 'letmein'
-  credentials = Base64.encode username + ':' + password
+
+  fails = (data) =>
+   auth.doLogin(username,password).then (response) =>
+    $scope.result = "logged in: " + response
+  passes = (response) =>
+    $scope.result = response
   
-  apiService.checkCredentials(credentials).success (data, status, headers, config) =>
-    $scope.result = data.data
-    console.log data
-   .error (data, status, headers, config) =>
-    $scope.result = data
-    console.log data
+  auth.allowedAccess().then passes, fails 
+  
+  
+  
 ]
