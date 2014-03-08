@@ -6,38 +6,8 @@
 	<link rel="stylesheet" type="text/css" href="<%= css %>" media = "all" />
 </head>
 <body>
- <div class='row'>
-  <div class='small-3 columns'>&nbsp;</div>
-  <div class='small-6 columns' ng-controller='loginController as login'>
-   <div class='row'>
-    <div class='small-3 columns small-centered'><h2>Login!</h2></div>
-   </div>
-   <form class='nice'>
-    <div class='row'>
-     <div class='small-4 columns'>
-      <label for='username' class='right inline'>Username</label>
-     </div>
-     <div class='small-8 columns'>
-      <input id='username' ng-model='login.username' type='text'>
-     </div>
-    </div>
-    <div class='row'>
-     <div class='small-4 columns'>
-      <label for='password' class='right inline'>Password</label>
-     </div>
-     <div class='small-8 columns'>
-      <input id='password' ng-model='login.password' type='password'>
-     </div>
-    </div>
-    <div class='row'>
-     <div class='small-3 columns small-centered'>
-      <button ng-click='login.login()'>Login</button>
-     </div>
-    </div>
-   </form>
+  <div ng-view>
   </div>
-  <div class='small-3 columns'>&nbsp;</div>
- </div>
-	<script type="text/javascript" src="<%= js %>"></script>
+ 	<script type="text/javascript" src="<%= js %>"></script>
 </body>
 </html>
