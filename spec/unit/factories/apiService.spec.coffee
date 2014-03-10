@@ -9,22 +9,57 @@ describe "apiService", ->
   @subject = $injector.get 'apiService'
   
  Then -> expect(@subject).toBeDefined()
- Then -> expect(@subject.url).toBe('')
  Then -> expect(@subject.credentials).toBe('')
  
  describe "setUrl()", ->
   When -> @subject.setUrl(@url)
   Then -> expect(@subject.url).toBe(@url)
+  
+ describe "setHeader()", ->
+  When -> @subject.setHeader('Authorization', 'foo')
+  Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'foo'
  
- describe "isValidated() when valid is true", ->
-  When -> @subject.validated = true;
-  Then -> expect(@subject.isValidated()).toBe(true)
- 
- describe "isValidated() when valid is false", ->
-  When -> @subject.validated = false;
-  Then -> expect(@subject.isValidated()).toBe(false)
- 
- 
+ describe "get()", ->
+  Given -> 
+   @url = 'http://someurl/'
+   @subject.url = @url
+   
+   
+  describe "with no path provided", ->
+   Given -> 
+    @httpBackend.whenGET(@url).respond('foo')
+
+   When ->   
+    @subject.get()
+    @httpBackend.flush()
+    
+   Then -> @httpBackend.expectGET(@url) 
+
+  describe "with a path provided", ->
+   Given ->
+    @path = 'foo/'
+    @httpBackend.whenGET(@url+@path).respond('foo') 
+  
+   describe "with no credentials" , ->
+   
+    When -> 
+     @subject.get(@path)
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectGET(@url+@path)
+    Then -> expect(@http.defaults.headers.common['Authorization']).not.toBeDefined()
+   
+   describe "with credentials" , ->
+    
+    When -> 
+     @creds = 'foo'
+     @subject.setCredentials @creds
+     @subject.get @path 
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectGET(@url+@path)
+    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds)
+   
  describe "checkCredentials()", ->
   Given ->
    @username = "foo"
@@ -44,10 +79,7 @@ describe "apiService", ->
      @rootScope.$apply()
      
     Then -> @httpBackend.expectGET @url
-    Then -> expect(@subject.credentials).toEqual(@credentials)
-    Then -> expect(@subject.validated).toBe(true)
     Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials
-    #Then -> expect(@result).toBe(true)
     
    describe "when authorization fails", ->
     Given ->
@@ -59,8 +91,6 @@ describe "apiService", ->
      @rootScope.$apply()
      
     Then -> @httpBackend.expectGET @url
-    Then -> expect(@subject.credentials).toEqual('')
-    Then -> expect(@subject.validated).toBe(false)
     Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials
    
   describe "with an invalid url", ->
@@ -75,6 +105,4 @@ describe "apiService", ->
     @rootScope.$apply()
     
    Then -> @httpBackend.expectGET @invalidUrl
-   Then -> expect(@subject.credentials).not.toEqual(@credentials)
-   Then -> expect(@subject.validated).toBe(false)
    

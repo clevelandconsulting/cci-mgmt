@@ -29,7 +29,7 @@ describe "authorization integration", ->
    @loginUser = @username
    @loginPass = @password 
    @serverError = false
-   @restFmAuthorization.apiService.validated = false
+   #@restFmAuthorization.apiService.validated = false
    @restFmAuthorization.credentialStorageService.save('')
    
   When ->
@@ -40,7 +40,7 @@ describe "authorization integration", ->
    
   Then -> expect(@success).toBe(true)
   Then -> expect(@restFmAuthorization.lastError).toBe(0)
-  Then -> expect(@restFmAuthorization.apiService.validated).toBe(true)
+  #Then -> expect(@restFmAuthorization.apiService.validated).toBe(true)
   Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual(@credentials)
   
  describe "doLogin() with valid server error should fail and have last error", ->  
@@ -50,7 +50,7 @@ describe "authorization integration", ->
    @loginPass = @password 
    @previousCredentials = 'foo'
    @serverError = true
-   @restFmAuthorization.apiService.validated = true
+   #@restFmAuthorization.apiService.validated = true
    @restFmAuthorization.credentialStorageService.save(@previousCredentials)
    
   When ->   
@@ -61,7 +61,7 @@ describe "authorization integration", ->
    
   Then -> expect(@failure).toBe(true)
   Then -> expect(@restFmAuthorization.lastError).toBe(500)
-  Then -> expect(@restFmAuthorization.apiService.validated).toBe(false)
+  #Then -> expect(@restFmAuthorization.apiService.validated).toBe(false)
   Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual(@previousCredentials)
 
 
@@ -80,5 +80,5 @@ describe "authorization integration", ->
    
   Then -> expect(@failure).toBe(true)
   Then -> expect(@restFmAuthorization.lastError).toBe(0)
-  Then -> expect(@restFmAuthorization.apiService.validated).toBe(false)
+  #Then -> expect(@restFmAuthorization.apiService.validated).toBe(false)
   Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual('')

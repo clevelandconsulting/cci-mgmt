@@ -8,13 +8,38 @@ describe "authorizatonService", ->
  Given inject ($injector, $q, $rootScope) ->
   @q = $q
   @rootScope = $rootScope
-  @subject = $injector.get 'authorizationService', { $q: @q, credentialStorageService: @mockCredentialStorageService, apiService: @mockApiService }
-  #simulate a previous error
-  @subject.lastError = 500
+  @injector = $injector
+  @services = { $q: @q, credentialStorageService: @mockCredentialStorageService, apiService: @mockApiService }
   
- Then -> expect(@subject).toBeDefined()
- Then -> expect(@subject.credentialStorageService).toBe(@mockCredentialStorageService)
- Then -> expect(@subject.apiService).toBe(@mockApiService)
+ describe "constructor when no stored credentials", ->
+  Given -> spyOn(@mockCredentialStorageService, "get").andReturn ''
+
+  When ->
+   @subject = @injector.get 'authorizationService', @services
+   #simulate a previous error
+   @subject.lastError = 500
+   
+  Then -> expect(@subject).toBeDefined()
+  Then -> expect(@subject.credentialStorageService).toBe(@mockCredentialStorageService)
+  Then -> expect(@subject.apiService).toBe(@mockApiService)
+  Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
+  Then -> expect(@subject.apiService.credentials).toBe('')
+ 
+ describe "constructor when there is a stored credential", ->
+  Given -> 
+   @creds = 'foo'
+   spyOn(@mockCredentialStorageService, "get").andReturn @creds
+   
+  When ->
+   @subject = @injector.get 'authorizationService', @services
+   #simulate a previous error
+   @subject.lastError = 500
+   
+  Then -> expect(@subject).toBeDefined()
+  Then -> expect(@subject.credentialStorageService).toBe(@mockCredentialStorageService)
+  Then -> expect(@subject.apiService).toBe(@mockApiService)
+  Then -> expect(@subject.apiService.credentials).toEqual @creds
+
  
  describe "apiUrl()", ->
   Given ->
@@ -26,25 +51,25 @@ describe "authorizatonService", ->
   Then -> expect(@mockApiService.setUrl).toHaveBeenCalledWith(@url)
   Then -> expect(@subject.apiService.url).toBe(@url)
  
- describe "checkIfLoggedIn() when api service validated", ->
+ describe "checkIfLoggedIn() when credentials present", ->
   Given ->
-   @loggedIn = true;
-   spyOn(@mockApiService, 'isValidated').andReturn(@loggedIn)
+   @credentials = 'something'
+   spyOn(@mockCredentialStorageService, 'get').andReturn(@credentials)
    
   When -> @result = @subject.checkIfLoggedIn()
   
-  Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-  Then -> expect(@result).toBe(@loggedIn)
+  Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
+  Then -> expect(@result).toBe(true)
   
- describe "checkIfLoggedIn() when api service not validated", ->
+ describe "checkIfLoggedIn() when credentials not present", ->
   Given ->
-   @loggedIn = false;
-   spyOn(@mockApiService, 'isValidated').andReturn(@loggedIn)
+   @credentials = ''
+   spyOn(@mockCredentialStorageService, 'get').andReturn(@credentials)
    
   When -> @result = @subject.checkIfLoggedIn()
   
-  Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-  Then -> expect(@result).toBe(@loggedIn)
+  Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
+  Then -> expect(@result).toBe(false)
   
  describe "getStoredCredentials() when credentials exist", ->
   Given ->
@@ -65,116 +90,7 @@ describe "authorizatonService", ->
   
   Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
   Then -> expect(@result).toBe(@credentials)
-
-
-  
- describe "allowedAccess()", ->
-  Given -> 
-   @credentials = 'foobar'
-   
-   @successFn = (data) => @success = true
-   @failureFn = (data) => @failure = true
-   
-   spyOn(@mockApiService, 'isValidated').andReturn(@isValidated)
-   spyOn(@mockApiService, 'checkCredentials').andCallFake =>
-    if @succeedPromise
-     @q.when 'foo'
-    else
-     @q.reject @response
-  
-  describe "when api service is validated", ->
-   Given ->
-    @isValidated = true
-    spyOn(@mockCredentialStorageService,"get").andReturn(@credentials)
-     
-   When ->
-    @succeedPromise = true
-    @promise = @subject.allowedAccess()
-    @promise.then @successFn, @failureFn
-    @rootScope.$apply()
-  
-   Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-   Then -> expect(@success).toBe(true)
-   Then -> expect(@subject.lastError).toBe(0)
-  
-  describe "when api service not validated but has stored valid credentials", ->
-   Given -> 
-    @isValidated = false
-    spyOn(@mockCredentialStorageService,"get").andReturn(@credentials)
-    
-   When ->
-    @status = 200
-    @response = {status:@status,data:''}
-    @succeedPromise = true
-    @promise = @subject.allowedAccess()
-    @promise.then @successFn, @failureFn
-    @rootScope.$apply()
-    
-    
-   Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-   Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
-   Then -> expect(@mockApiService.checkCredentials).toHaveBeenCalledWith(@credentials)
-   Then -> expect(@success).toBe(true)
-   Then -> expect(@subject.lastError).toBe(0)
-   
-  describe "when api service not validated and has stored invalid credentials", ->
-   Given -> 
-    @isValidated = false
-    spyOn(@mockCredentialStorageService,"get").andReturn(@credentials)
-    
-   When ->
-    @succeedPromise = false
-    @status = 401
-    @response = {status:@status,data:''}
-    @promise = @subject.allowedAccess()
-    @promise.then @successFn, @failureFn
-    @rootScope.$apply()
-    
-    
-   Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-   Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
-   Then -> expect(@mockApiService.checkCredentials).toHaveBeenCalledWith(@credentials)
-   Then -> expect(@failure).toBe(true) 
-   Then -> expect(@subject.lastError).toBe(0)
-   
-  describe "when api service not validated and has stored invalid credentials and other than 401", ->
-   Given -> 
-    @isValidated = false
-    spyOn(@mockCredentialStorageService,"get").andReturn(@credentials)
-    
-   When ->
-    @succeedPromise = false
-    @status = 500
-    @response = {status:@status,data:''}
-    @promise = @subject.allowedAccess()
-    @promise.then @successFn, @failureFn
-    @rootScope.$apply()
-    
-    
-   Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-   Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
-   Then -> expect(@mockApiService.checkCredentials).toHaveBeenCalledWith(@credentials)
-   Then -> expect(@failure).toBe(true) 
-   Then -> expect(@subject.lastError).toBe(@status)
-   
-  describe "when api service not validated and has no stored credentials", ->
-   Given -> 
-    @credentials = ''
-    @isValidated = false
-    spyOn(@mockCredentialStorageService,"get").andReturn(@credentials)
-    
-   When ->
-    @promise = @subject.allowedAccess()
-    @promise.then @successFn, @failureFn
-    @rootScope.$apply()
-    
-    
-   Then -> expect(@mockApiService.isValidated).toHaveBeenCalled()
-   Then -> expect(@mockCredentialStorageService.get).toHaveBeenCalled()
-   Then -> expect(@mockApiService.checkCredentials).not.toHaveBeenCalled()
-   Then -> expect(@failure).toBe(true) 
-   Then -> expect(@subject.lastError).toBe(0)
-   
+ 
  describe "doLogin()", ->
   Given ->
    @successFn = (data) => 

@@ -32,6 +32,7 @@ module.exports = function(lineman) {
     	    "vendor/bower/jquery/dist/jquery.js",
     	    "vendor/bower/toastr/toastr.js",
     	    "vendor/bower/underscore/underscore.js",
+    	    "vendor/bower/underscore.string/lib/underscore.string.js",
     	    "vendor/bower/foundation/js/foundation.js",
     	    "vendor/bower/amplify/lib/amplify.js",
     	    "vendor/bower/amplify/lib/amplify.store.js",

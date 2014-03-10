@@ -17,4 +17,5 @@ describe "routes", ->
   
  describe "default route", ->
   When -> @defaultRoute = @route.routes[null]
-  Then -> expect(@defaultRoute.redirectTo).toBe('/login')
+  Then -> expect(@defaultRoute.redirectTo).toBe('/home')
+ 
