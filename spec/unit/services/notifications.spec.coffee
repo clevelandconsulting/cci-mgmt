@@ -1,3 +1,4 @@
+###
 describe 'notifications', ->
  Given -> module('app')
  
@@ -46,4 +47,4 @@ describe 'notifications', ->
   
   Then -> expect(@mockToastrService.success).toHaveBeenCalledWith(@msg)
   
-  
+  ###

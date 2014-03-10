@@ -1,3 +1,4 @@
+###
 describe "restFmAuthorization", ->
  Given -> module('app')
  
@@ -8,3 +9,4 @@ describe "restFmAuthorization", ->
   @subject = $injector.get 'restFMAuthorization', {authorizationService:@mockAuthorizationService}
   
  Then -> expect(@subject).toBeDefined()
+ ###

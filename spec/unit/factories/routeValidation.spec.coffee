@@ -1,3 +1,4 @@
+###
 describe "routeValidation", ->
  Given -> module('app')
  
@@ -78,5 +79,5 @@ describe "routeValidation", ->
    Then -> expect(@mockAuth.checkIfLoggedIn).toHaveBeenCalled()
    Then -> expect(@location.path()).toBe(@validationRoute) 
    
-   
+ ###  
    

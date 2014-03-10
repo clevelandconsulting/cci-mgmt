@@ -1,4 +1,5 @@
 describe "loginController", ->
+###
  Given -> module('app')
  
  Given angular.mock.inject (restFMAuthorization, notifications) ->
@@ -82,4 +83,4 @@ describe "loginController", ->
    Then -> expect(@mockNotifications.clear).toHaveBeenCalledWith(@loginToastr)
    Then -> expect(@mockNotifications.error).toHaveBeenCalledWith(@msg)
    Then -> expect(@location.path()).toEqual(@currentLocation)
-  
+###  

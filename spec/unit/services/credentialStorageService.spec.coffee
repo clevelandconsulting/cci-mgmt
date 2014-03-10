@@ -1,3 +1,4 @@
+###
 describe "credentialStorageService", ->
  Given -> module ("app")
  
@@ -61,11 +62,7 @@ describe "credentialStorageService", ->
   Then -> expect(@mockStorageService.store).toHaveBeenCalledWith('credentials', '')
  
  describe "get()", ->
-  ###
-  when called we expect it to check storage for credentials and return them
-  if any are there, otherwise it should return with an empty username/password
-  object: { username: '', password: '' }
-  ###
+  
   
   describe "when storage has a username and password", ->
    Given -> @credentials = @authorizationCredentials(@username,@password)
@@ -83,10 +80,7 @@ describe "credentialStorageService", ->
    Then -> expect(@result).toEqual('')  
     
  describe "save()", ->
-  ###
-  when called we expect it to be passed a username and password to store that
-  will later be accessible
-  ###
+  
   
   Given -> 
    @username = 'foo'
@@ -96,4 +90,4 @@ describe "credentialStorageService", ->
   When -> @result = @subject.save(@credentials)
   Then -> expect(@mockStorageService.store).toHaveBeenCalledWith('credentials',@credentials)
   
-  
+  ###
