@@ -1,13 +1,15 @@
 describe "authorization integration", ->
-###
- Given -> module ('app')
- Given inject ($injector, $http, $httpBackend, $rootScope) ->
-  @restFmAuthorization = $injector.get 'restFMAuthorization' 
+ Given -> module('app')
+ 
+ Given angular.mock.inject ($injector, $q, $httpBackend, $rootScope, credentialStorageService, cciApiService) ->
+  @mockCreds = credentialStorageService
+  @mockCCI = cciApiService
+  @authorization = $injector.get 'authorizationService', {$q:$q, credentialStorageService:@mockCreds, cciApiService:@mockCCI} 
   @httpBackend = $httpBackend
   @rootScope = $rootScope
   
    
- Then -> expect(@restFmAuthorization).toBeDefined()
+ Then -> expect(@authorization).toBeDefined()
  
  Given ->
   @username = 'foo'
@@ -15,7 +17,7 @@ describe "authorization integration", ->
   @credentials = Base64.encode(@username+':'+@password)
   @successFn = (data) => @success = true
   @failureFn = (data) => @failure = true
-  @httpBackend.whenGET('https://fms.clevelandconsulting.com/RESTfm/CCI_Mgmt/').respond (method, url, data, headers) =>
+  @httpBackend.whenGET('https://fms.clevelandconsulting.com/RESTfm/STEVE/').respond (method, url, data, headers) =>
    if @serverError
     [500,{},{}]
    else
@@ -30,17 +32,17 @@ describe "authorization integration", ->
    @loginUser = @username
    @loginPass = @password 
    @serverError = false
-   @restFmAuthorization.credentialStorageService.save('')
+   @authorization.credentialStorageService.save('')
    
   When ->
-   @promise = @restFmAuthorization.doLogin(@loginUser,@loginPass)
+   @promise = @authorization.doLogin(@loginUser,@loginPass)
    @promise.then @successFn, @failureFn
    @httpBackend.flush()
    @rootScope.$apply()
    
   Then -> expect(@success).toBe(true)
-  Then -> expect(@restFmAuthorization.lastError).toBe(0)
-  Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual(@credentials)
+  Then -> expect(@authorization.lastError).toBe(0)
+  Then -> expect(@authorization.credentialStorageService.get()).toEqual(@credentials)
   
  describe "doLogin() with valid server error should fail and have last error", ->  
   
@@ -49,18 +51,17 @@ describe "authorization integration", ->
    @loginPass = @password 
    @previousCredentials = 'foo'
    @serverError = true
-   #@restFmAuthorization.apiService.validated = true
-   @restFmAuthorization.credentialStorageService.save(@previousCredentials)
+   @authorization.credentialStorageService.save(@previousCredentials)
    
   When ->   
-   @promise = @restFmAuthorization.doLogin(@loginUser,@loginPass)
+   @promise = @authorization.doLogin(@loginUser,@loginPass)
    @promise.then @successFn, @failureFn
    @httpBackend.flush()
    @rootScope.$apply()
    
   Then -> expect(@failure).toBe(true)
-  Then -> expect(@restFmAuthorization.lastError).toBe(500)
-  Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual(@previousCredentials)
+  Then -> expect(@authorization.lastError).toBe(500)
+  Then -> expect(@authorization.credentialStorageService.get()).toEqual(@previousCredentials)
 
 
  describe "doLogin() with invalid username & password should fail", ->  
@@ -71,12 +72,11 @@ describe "authorization integration", ->
    @serverError = false
     
   When ->
-   @promise = @restFmAuthorization.doLogin(@loginUser,@loginPass)
+   @promise = @authorization.doLogin(@loginUser,@loginPass)
    @promise.then @successFn, @failureFn
    @httpBackend.flush()
    @rootScope.$apply()
    
   Then -> expect(@failure).toBe(true)
-  Then -> expect(@restFmAuthorization.lastError).toBe(0)
-  Then -> expect(@restFmAuthorization.credentialStorageService.get()).toEqual('')
-###
+  Then -> expect(@authorization.lastError).toBe(0)
+  Then -> expect(@authorization.credentialStorageService.get()).toEqual('')

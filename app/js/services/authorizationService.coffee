@@ -1,14 +1,12 @@
 class authorizationService
-  constructor: ($q, credentialStorageService, apiService) ->
-   @credentialStorageService = credentialStorageService
-   console.log @credentialStorageService.get()
-   @$q = $q
-   @apiService = apiService
+  constructor: (@$q, @credentialStorageService, @apiService) ->
+   @init()
+   
+  init: -> 
    @lastError = 0
-   @credentials = @credentialStorageService.get()
-   console.log "CREDS", @credentials
-   if @credentials != ''
-    @apiService.setCredentials @credentials
+   credentials = @credentialStorageService.get()
+   if credentials != ''
+    @apiService.setCredentials credentials
   
   apiUrl: (url) ->
    @apiService.setUrl(url) 
@@ -48,5 +46,10 @@ class authorizationService
    @apiService.checkCredentials(credentials).then success, failure
    
    @deferred.promise
-   
-angular.module('app').factory 'authorizationService', ['$q', 'credentialStorageService','apiService', ($q, credentialStorageService, apiService) -> new authorizationService($q, credentialStorageService, apiService) ]
+  
+  doLogout: ->
+   if @checkIfLoggedIn()
+    @credentialStorageService.clear()
+   @apiService.clearCredentials() 
+     
+angular.module('app').factory 'authorizationService', ['$q', 'credentialStorageService', 'cciApiService', ($q, credentialStorageService, cciApiService) -> new authorizationService($q, credentialStorageService, cciApiService) ]

@@ -6,8 +6,32 @@
 	<link rel="stylesheet" type="text/css" href="<%= css %>" media = "all" />
 </head>
 <body>
+  <div ng-controller='navController as nav'>
+  
+   <nav class='top-bar' data-topbar>
+    <ul class='title-area'>
+     <li class='name'>
+      <h1><a href='#'>CCI Management System</a></h1>
+     </li>
+     <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>  
+    <section class='top-bar-section'>
+     <ul class='right'>
+      <li ng-show='nav.isLoggedIn()'>
+       <a ng-click='nav.logout()'>Logout</a>
+      </li>
+     </ul>
+    </section>
+   </nav>
+   
+  </div>
   <div ng-view>
   </div>
  	<script type="text/javascript" src="<%= js %>"></script>
+ 	
+ 	<script>
+   $(document).foundation();
+  </script>
+  
 </body>
 </html>

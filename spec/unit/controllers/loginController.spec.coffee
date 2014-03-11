@@ -1,16 +1,15 @@
 describe "loginController", ->
-###
  Given -> module('app')
  
- Given angular.mock.inject (restFMAuthorization, notifications) ->
-  @mockRestFMAuthorization = restFMAuthorization
+ Given angular.mock.inject (authorizationService, notifications) ->
+  @mockRestFMAuthorization = authorizationService
   @mockNotifications = notifications
  
  Given inject ($controller, $rootScope, $q, $location) ->
   @scope = $rootScope.$new()
   @location = $location
   @q = $q
-  @subject = $controller 'loginController', {restFMAuthorization: @mockRestFMAuthorization, $scope:@scope, $location:@location}
+  @subject = $controller 'loginController', {restFMAuthorization: @mockRestFMAuthorization, $location:@location}
   
  Then -> expect(@subject).toBeDefined()
  Then -> expect(@subject.username).toBeDefined()
@@ -82,5 +81,4 @@ describe "loginController", ->
    Then -> expect(@mockRestFMAuthorization.doLogin).toHaveBeenCalledWith(@username,@password)
    Then -> expect(@mockNotifications.clear).toHaveBeenCalledWith(@loginToastr)
    Then -> expect(@mockNotifications.error).toHaveBeenCalledWith(@msg)
-   Then -> expect(@location.path()).toEqual(@currentLocation)
-###  
+   Then -> expect(@location.path()).toEqual(@currentLocation) 

@@ -1,4 +1,4 @@
-angular.module('app').service 'routeValidation', [ '$rootScope','$location','restFMAuthorization', class routeValidation
+angular.module('app').service 'routeValidation', [ '$rootScope','$location','authorizationService', class routeValidation
   constructor: (@rootScope,@location,@authorization) ->
    @routesRequireNoValidation = []
    

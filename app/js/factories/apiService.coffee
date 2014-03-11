@@ -6,7 +6,11 @@ class apiService
    #@http({method: 'GET', url: @url + "?RFMkey=cci-developer"})
    
   setUrl: (@url) ->
+  
   setCredentials: (@credentials) ->
+  
+  clearCredentials: -> @credentials = ''
+  
   setHeader: (name,value) ->
    @http.defaults.headers.common[name] = value
   setAuth: ->
@@ -23,5 +27,4 @@ class apiService
    @http({method: 'GET', url: @url})  
 
 
-angular.module('app').factory 'apiService', ['$http', ($http) -> new apiService($http)
-]
+angular.module('app').factory 'apiService', -> apiService # ['$http', ($http) -> new apiService($http) ]

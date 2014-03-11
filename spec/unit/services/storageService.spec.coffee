@@ -1,4 +1,3 @@
-###
 describe "storageService", ->
  Given -> module ("app")
 
@@ -26,5 +25,3 @@ describe "storageService", ->
    
   When -> @result = @subject.get('foo')
   Then -> expect(@result).toEqual(@foo)
-
-###

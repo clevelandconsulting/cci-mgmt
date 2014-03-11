@@ -1,4 +1,3 @@
-###
 describe "amplifyStorage", ->
  Given -> module('app')
  Given inject ($injector) ->
@@ -6,4 +5,3 @@ describe "amplifyStorage", ->
   
  Then -> expect(@subject).toBeDefined()
  Then -> expect(@subject.store).toBeDefined()
- ###

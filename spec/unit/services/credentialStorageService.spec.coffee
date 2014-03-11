@@ -1,4 +1,3 @@
-###
 describe "credentialStorageService", ->
  Given -> module ("app")
  
@@ -89,5 +88,3 @@ describe "credentialStorageService", ->
    
   When -> @result = @subject.save(@credentials)
   Then -> expect(@mockStorageService.store).toHaveBeenCalledWith('credentials',@credentials)
-  
-  ###

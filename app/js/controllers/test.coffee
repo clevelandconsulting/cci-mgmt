@@ -1,4 +1,4 @@
-angular.module('app').controller 'testController', ['apiService', 'restFMAuthorization', '$scope', (apiService, auth, $scope) ->
+angular.module('app').controller 'testController', ['apiService', 'authorizationService', '$scope', (apiService, auth, $scope) ->
   $scope.result = 'TESTING'
   username = 'Developer'
   password = 'letmein'

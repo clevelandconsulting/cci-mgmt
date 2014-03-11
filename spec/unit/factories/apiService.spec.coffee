@@ -1,5 +1,5 @@
 describe "apiService", ->
-###
+
  Given -> module('app')
 
  Given inject ($injector, $http, $httpBackend, $rootScope) ->
@@ -7,10 +7,22 @@ describe "apiService", ->
   @http = $http
   @httpBackend = $httpBackend
   @rootScope = $rootScope
-  @subject = $injector.get 'apiService'
+  @api = $injector.get 'apiService'
+  @subject = new @api($http)
   
  Then -> expect(@subject).toBeDefined()
  Then -> expect(@subject.credentials).toBe('')
+ 
+ describe "clearCredentials() with some credentials", ->
+  Given -> @subject.credentials = 'something'
+  When -> @subject.clearCredentials()
+  Then -> expect(@subject.credentials).toBe('')
+ 
+ describe "clearCredentials() with no credentials", ->
+  Given -> @subject.credentials = ''
+  When -> @subject.clearCredentials()
+  Then -> expect(@subject.credentials).toBe('')
+ 
  
  describe "setUrl()", ->
   When -> @subject.setUrl(@url)
@@ -106,4 +118,3 @@ describe "apiService", ->
     @rootScope.$apply()
     
    Then -> @httpBackend.expectGET @invalidUrl
-###

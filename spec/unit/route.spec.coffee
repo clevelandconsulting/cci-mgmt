@@ -1,4 +1,3 @@
-###
 describe "routes", ->
  Given -> module('app')
  Given inject ($route) ->
@@ -19,4 +18,3 @@ describe "routes", ->
  describe "default route", ->
   When -> @defaultRoute = @route.routes[null]
   Then -> expect(@defaultRoute.redirectTo).toBe('/home')
- ###

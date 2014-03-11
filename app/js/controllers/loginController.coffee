@@ -1,6 +1,6 @@
-angular.module('app').controller 'loginController', [ 'restFMAuthorization', 'notifications', '$scope', '$location'
+angular.module('app').controller 'loginController', [ 'authorizationService', 'notifications', '$location'
  class loginController 
-  constructor: (@auth, @notifications, @scope, @location) ->
+  constructor: (@auth, @notifications, @location) ->
    @username=''
    @password=''
   

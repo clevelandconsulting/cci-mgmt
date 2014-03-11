@@ -1,14 +1,13 @@
-###
 describe "routeValidation", ->
  Given -> module('app')
  
- Given angular.mock.inject (restFMAuthorization) ->
-  @mockAuth = restFMAuthorization
+ Given angular.mock.inject (authorizationService) ->
+  @mockAuth = authorizationService
  
  Given inject ($rootScope, $location, $injector) ->
   @rootScope = $rootScope
   @location = $location
-  @subject = $injector.get 'routeValidation', {$rootScope: @rootScope, $location: @location, 'restFMAuthorization': @mockAuth}
+  @subject = $injector.get 'routeValidation', {$rootScope: @rootScope, $location: @location, 'authorizationService': @mockAuth}
   
  Then -> expect(@subject).toBeDefined() 
  
@@ -78,6 +77,3 @@ describe "routeValidation", ->
     
    Then -> expect(@mockAuth.checkIfLoggedIn).toHaveBeenCalled()
    Then -> expect(@location.path()).toBe(@validationRoute) 
-   
- ###  
-   
