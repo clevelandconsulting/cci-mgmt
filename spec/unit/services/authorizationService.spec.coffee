@@ -104,7 +104,8 @@ describe "authorizatonService", ->
    
    @username = 'foo'
    @password = 'bar'
-   @credentials = Base64.encode(@username + ':' + @password)
+   @credentials = {auth: Base64.encode(@username + ':' + @password), username: @username}
+   
    spyOn(@mockCredentialStorageService,'form').andReturn(@credentials) 
    spyOn(@mockCredentialStorageService,'save')
    spyOn(@mockCredentialStorageService,'clear')

@@ -65,19 +65,19 @@ describe "apiService", ->
    describe "with credentials" , ->
     
     When -> 
-     @creds = 'foo'
+     @creds = {auth: 'foo'}
      @subject.setCredentials @creds
      @subject.get @path 
      @httpBackend.flush()
     
     Then -> @httpBackend.expectGET(@url+@path)
-    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds)
+    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds.auth)
    
  describe "checkCredentials()", ->
   Given ->
    @username = "foo"
    @password = "bar"
-   @credentials = Base64.encode @username + ':' + @password
+   @credentials = {auth: Base64.encode @username + ':' + @password, username: @username}
    
   describe "with a valid url", -> 
    Given -> @subject.url = @url
@@ -92,7 +92,7 @@ describe "apiService", ->
      @rootScope.$apply()
      
     Then -> @httpBackend.expectGET @url
-    Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials
+    Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials.auth
     
    describe "when authorization fails", ->
     Given ->
@@ -104,7 +104,7 @@ describe "apiService", ->
      @rootScope.$apply()
      
     Then -> @httpBackend.expectGET @url
-    Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials
+    Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'Basic ' + @credentials.auth
    
   describe "with an invalid url", ->
    Given -> 

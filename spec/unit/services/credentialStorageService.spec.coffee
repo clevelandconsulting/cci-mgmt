@@ -8,7 +8,7 @@ describe "credentialStorageService", ->
   @subject = $injector.get 'credentialStorageService', {storageService:@mockStorageService}
  
  Given -> 
-  @authorizationCredentials = (un,pw) -> Base64.encode(un + ":" + pw)
+  @authorizationCredentials = (un,pw) -> {auth: Base64.encode(un + ":" + pw), username: un}
   spyOn(@mockStorageService,'store').andCallFake (name,value) =>
    if not value?
     if name == 'credentials'

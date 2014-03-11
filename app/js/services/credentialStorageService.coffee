@@ -3,7 +3,8 @@ angular.module('app').service 'credentialStorageService', [ 'storageService', cl
   
   form: (username,password) ->
    if username != ''
-    Base64.encode username + ':' + password
+    auth = Base64.encode(username + ':' + password)
+    {auth: auth, username: username}
    else
     ''
     

@@ -14,14 +14,14 @@ describe "authorization integration", ->
  Given ->
   @username = 'foo'
   @password = 'bar'
-  @credentials = Base64.encode(@username+':'+@password)
+  @credentials = {auth: Base64.encode(@username+':'+ @password), username: @username}
   @successFn = (data) => @success = true
   @failureFn = (data) => @failure = true
   @httpBackend.whenGET('https://fms.clevelandconsulting.com/RESTfm/STEVE/').respond (method, url, data, headers) =>
    if @serverError
     [500,{},{}]
    else
-    if headers.Authorization == 'Basic ' + @credentials
+    if headers.Authorization == 'Basic ' + @credentials.auth
      [200,{},{}]
     else
      [401,{},{}] 
@@ -32,6 +32,7 @@ describe "authorization integration", ->
    @loginUser = @username
    @loginPass = @password 
    @serverError = false
+   spyOn(@mockCreds,"form").andReturn(@credentials)
    @authorization.credentialStorageService.save('')
    
   When ->

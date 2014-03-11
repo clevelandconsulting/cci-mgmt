@@ -15,7 +15,7 @@ class apiService
    @http.defaults.headers.common[name] = value
   setAuth: ->
    if @credentials != ''
-    @setHeader('Authorization', 'Basic ' + @credentials) 
+    @setHeader('Authorization', 'Basic ' + @credentials.auth) 
   
   get:(path) ->
    @setAuth()
@@ -23,7 +23,7 @@ class apiService
    @http({method: 'GET', url:@url+path})
    
   checkCredentials: (credentials) ->
-   @setHeader('Authorization', 'Basic ' + credentials)
+   @setHeader('Authorization', 'Basic ' + credentials.auth)
    @http({method: 'GET', url: @url})  
 
 
