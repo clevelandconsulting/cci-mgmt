@@ -1,9 +1,10 @@
 describe "loginController", ->
  Given -> module('app')
  
- Given angular.mock.inject (authorizationService, notifications) ->
+ Given angular.mock.inject (authorizationService, notifications, userRepository) ->
   @mockRestFMAuthorization = authorizationService
   @mockNotifications = notifications
+  @mockRepository = userRepository
  
  Given inject ($controller, $rootScope, $q, $location) ->
   @scope = $rootScope.$new()
