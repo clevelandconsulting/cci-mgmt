@@ -3,44 +3,99 @@ describe "userStorageService", ->
  
  Given angular.mock.inject ($injector,_amplifyStorage_) ->
   @mockAmplify = _amplifyStorage_
+  @expiry = {expires: 86400000 * 30}
   @subject = $injector.get 'userStorageService', {amplifyStorage: @mockAmplify}
   
  Then -> expect(@subject).toBeDefined()
  Then -> expect(@subject.amplifyStorage).toBe(@mockAmplify)
  
- describe "get() when a user exists", ->
+ describe "getUsers() when users exists", ->
   Given -> 
-   @user = { username: 'something' }
-   spyOn(@mockAmplify,"store").andReturn(@user)
+   @users = [{ username: 'something' }]
+   spyOn(@mockAmplify,"store").andReturn(@users)
    
-  When -> @result = @subject.get()
+  When -> @result = @subject.getUsers()
   
-  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('user')
-  Then -> expect(@result).toBe(@user)
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('users')
+  Then -> expect(@result).toBe(@users)
   
- describe "get() when a user exists", ->
+ describe "getUsers() when users does not exists", ->
   Given -> 
-   @user = ''
-   spyOn(@mockAmplify,"store").andReturn(@user)
+   @users = ''
+   spyOn(@mockAmplify,"store").andReturn(@users)
    
-  When -> @result = @subject.get()
+  When -> @result = @subject.getUsers()
   
-  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('user')
-  Then -> expect(@result).toBe(@user)
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('users')
+  Then -> expect(@result).toBe(@users)
   
- describe "save()", ->
+ describe "saveUsers()", ->
   Given ->
-   @user = { username: 'blah' }
+   @users = [{ username: 'blah' }]
    spyOn(@mockAmplify,"store")
    
-  When -> @subject.save(@user)
+  When -> @subject.saveUsers(@users)
   
-  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('user',@user)
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('users',@users, @expiry)
+ 
+ describe "addUser()", ->
+  Given ->
+   @user1 = { username: 'blah' }
+   @users = [@user1]
+   @user = {username: 'new'}
+   spyOn(@mockAmplify,"store").andReturn(@users)
+   @expectedCall = [@user1,@user]
+   
+  When -> @subject.addUser(@user)
   
- describe "clear()", ->
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('users',@expectedCall, @expiry)
+ 
+ 
+ describe "clearUsers()", ->
   Given ->
    spyOn(@mockAmplify,"store")
    
-  When -> @subject.clear()
+  When -> @subject.clearUsers()
   
-  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('user','')
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('users','')
+  
+  
+ describe "getCurrentId() when an id exists", ->
+  Given -> 
+   @userID = 2
+   spyOn(@mockAmplify,"store").andReturn(@userID)
+   
+  When -> @result = @subject.getCurrentId()
+  
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('currentUserID')
+  Then -> expect(@result).toBe(@userID)
+ 
+ describe "getCurrentId() when an id does not exists", ->
+  Given -> 
+   @userID = ''
+   spyOn(@mockAmplify,"store").andReturn(@userID)
+   
+  When -> @result = @subject.getCurrentId()
+  
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('currentUserID')
+  Then -> expect(@result).toBe(@userID)
+ 
+ describe "saveCurrentId()", ->
+  Given ->
+   @userID = 2
+   spyOn(@mockAmplify,"store")
+   
+  When -> @subject.saveCurrentId(@userID)
+  
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('currentUserID',@userID)
+ 
+ describe "clearCurrentId()", ->
+  Given ->
+   spyOn(@mockAmplify,"store")
+   
+  When -> @subject.clearCurrentId()
+  
+  Then -> expect(@mockAmplify.store).toHaveBeenCalledWith('currentUserID','')
+ 
+  
+  

@@ -16,10 +16,9 @@
      <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
     </ul>  
     <section class='top-bar-section'>
-     <ul class='right'>
-      <li ng-show='nav.isLoggedIn()'>
-       <a ng-click='nav.logout()'>Logout</a>
-      </li>
+     <ul class='right' ng-show='nav.isLoggedIn()'>
+      <li><a href='#'>{{ nav.username }}</a></li>
+      <li><a ng-click='nav.logout()'>Logout</a></li>
      </ul>
     </section>
    </nav>

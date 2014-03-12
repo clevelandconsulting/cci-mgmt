@@ -1,12 +1,23 @@
-angular.module('app').controller 'navController', ['$location', 'authorizationService', 
+angular.module('app').controller 'navController', ['$location', 'authorizationService', 'userRepository',
  class navController
-  constructor: (@$location, @authorizationService) ->
-  
+  constructor: (@$location, @authorizationService, @userRepository) ->
+    
   isLoggedIn: ->
-   @authorizationService.checkIfLoggedIn()
+   loggedIn = @authorizationService.checkIfLoggedIn()
+   if loggedIn and @username == undefined
+    @getUsername()
+   loggedIn
   
   logout: ->
    @authorizationService.doLogout()
+   @userRepository.clearCurrentUserId()
    @$location.path('/login')
 
+  getUsername: -> 
+   @promise = @userRepository.getCurrentUser()
+   
+   @promise.then (data) =>
+    @username = data.username
+   
+   @promise
 ]

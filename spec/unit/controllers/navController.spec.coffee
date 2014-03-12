@@ -1,9 +1,12 @@
 describe "navController", ->
  Given -> module('app')
- Given -> angular.mock.inject ($controller, $location, _authorizationService_) ->
+ Given -> angular.mock.inject ($controller, $location, $rootScope, $q, _authorizationService_, _userRepository_) ->
   @location = $location
+  @rootScope = $rootScope
+  @q = $q
   @mockAuth = _authorizationService_
-  @subject = $controller 'navController', {$location: @location}
+  @mockRepo = _userRepository_
+  @subject = $controller 'navController', {$location: @location, authorizationService: @mockAuth, userRepository:@mockRepo }
   
  Then -> expect(@subject).toBeDefined()
  
@@ -36,9 +39,28 @@ describe "navController", ->
     @mockAuth.apiService.credentials = ''
    spyOn(@mockAuth.credentialStorageService,"clear")
    spyOn(@mockAuth,"doLogout").andCallThrough() 
-  
+   spyOn(@mockRepo,"clearCurrentUserId")
+   
   When -> @subject.logout()
   
   Then -> expect(@mockAuth.doLogout).toHaveBeenCalled()
   Then -> expect(@mockAuth.apiService.credentials).toBe('')
+  Then -> expect(@mockRepo.clearCurrentUserId).toHaveBeenCalled()
   Then -> expect(@location.path()).toBe('/login')
+  
+ describe "getUsername() when user exists", ->
+  Given ->
+   @username = 'somename'
+   @user = {username:@username, recordID:2, href:'', data:{}} 
+   spyOn(@mockRepo,"getCurrentUser").andCallFake =>
+    @q.when @user
+   
+  When -> 
+   @promise = @subject.getUsername()
+   @promise.then (data) => @result = data
+   @rootScope.$apply()
+   
+  Then -> expect(@mockRepo.getCurrentUser).toHaveBeenCalled()
+  Then -> expect(@result).toEqual @user
+  Then -> expect(@subject.username).toEqual @username
+   
