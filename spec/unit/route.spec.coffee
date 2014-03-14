@@ -10,11 +10,11 @@ describe "routes", ->
   Then -> expect(@loginRoute.controller).toBe('loginController')
   Then -> expect(@loginRoute.templateUrl).toBe('login.html')
  
- describe "home route", ->
-  When -> @homeRoute = @route.routes['/home']
-  Then -> expect(@homeRoute.controller).toBe('homeController')
-  Then -> expect(@homeRoute.templateUrl).toBe('home.html')
+ describe "time route", ->
+  When -> @homeRoute = @route.routes['/time']
+  Then -> expect(@homeRoute.controller).toBe('timeController')
+  Then -> expect(@homeRoute.templateUrl).toBe('time.html')
   
  describe "default route", ->
   When -> @defaultRoute = @route.routes[null]
-  Then -> expect(@defaultRoute.redirectTo).toBe('/home')
+  Then -> expect(@defaultRoute.redirectTo).toBe('/time')

@@ -1,0 +1,29 @@
+<div ng-controller='timeController as time'>
+<h1>Home</h1>
+<p>{{ time.staffid }}</p>
+<div ng-show="time.hasTime()">
+ <h2>Times</h2>
+ <table>
+  <thead>
+   <tr>
+    <th>Date</th>
+    <td>Job Name</td>
+    <th>Type</th>
+    <th>Hours</th>
+    <th>Note</th>
+    <th>Full Resource</th>
+   </tr>
+  </thead>
+  <tbody>
+   <tr ng-repeat="t in time.times"> 
+    <td>{{ t.data.date }}</td>
+    <td>{{ t.data['Job.Time::name'] }}</td>
+    <td>{{ t.data.type }}</td>
+    <td>{{ t.data.hours }}</td>
+    <td>{{ t.data.note }}</td>
+    <td><a href='{{ t.href }}' target=_blank>{{ t.href }}</a></td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+</div>

@@ -1,7 +1,7 @@
 angular.module('app').service 'userRepository', [ '$q', 'cciApiService', 'user', 'userStorageService', 
  class userRepository
   constructor: (@$q, @cciApi, @user, @userStorage) ->
-   @path = 'layout/Staff'
+   @path = 'layout/Api-Staff'
   
   createUser: (apiResponse) ->
    try 

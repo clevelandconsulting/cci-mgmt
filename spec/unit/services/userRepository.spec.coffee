@@ -12,13 +12,13 @@ describe "userRepository", ->
   @expectedUser = new @mockUser @apiResponse.data.data[0], @apiResponse.data.meta[0].href, @apiResponse.data.meta[0].recordID
   @expectedUserId = 2
   @apiResponseFunction = (path) =>
-   if(path == 'layout/Staff.json?RFMsF1=filemaker_accountname&RFMsV1=' + @username || path == 'layout/Staff/2.json')
+   if(path == 'layout/Api-Staff.json?RFMsF1=filemaker_accountname&RFMsV1=' + @username || path == 'layout/Api-Staff/2.json')
      @q.when @apiResponse
     else
      @q.when '' 
   spyOn(@mockApi,"get").andCallFake @apiResponseFunction
 
- #Then -> expect(@subject).toBeDefined()
+ Then -> expect(@subject).toBeDefined()
  
  describe "getUserByUsername() when not stored and a valid api response", ->
   Given ->
@@ -74,7 +74,7 @@ describe "userRepository", ->
 
  describe "getUserByHref() when not stored and a valid api response", ->
   Given -> 
-   @href= "/RESTfm/STEVE/layout/Staff/2.json"
+   @href= "/RESTfm/STEVE/layout/Api-Staff/2.json"
    spyOn(@mockUserStorage,"addUser")
    
   When -> 
@@ -169,8 +169,7 @@ describe "userRepository", ->
    @rootScope.$apply()
   
   Then -> expect(@mockUserStorage.getCurrentId).toHaveBeenCalled()
-  Then -> expect(@result).toEqual('No User Found')
-   
+  Then -> expect(@result).toEqual('No User Found')   
 
 
  describe "saveCurrentUserId", ->

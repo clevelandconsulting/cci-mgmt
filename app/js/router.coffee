@@ -1,9 +1,9 @@
 angular.module('app').config ['$routeProvider', (routeProvider) ->
  routeProvider
  .when('/login', {controller:'loginController', templateUrl:'login.html'})
- .when('/home', {controller:'homeController', templateUrl: 'home.html'})
+ .when('/time', {controller:'timeController', templateUrl: 'time.html'})
  .when('/test', {controller: 'testController', template: '<p>{{ result }}</p>'})
- .otherwise {redirectTo:'/home'}
+ .otherwise {redirectTo:'/time'}
 ]
 
 angular.module('app').run ($rootScope,$location,routeValidation) ->
