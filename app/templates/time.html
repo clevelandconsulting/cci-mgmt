@@ -1,29 +1,35 @@
-<div ng-controller='timeController as time'>
-<h1>Home</h1>
-<p>{{ time.staffid }}</p>
-<div ng-show="time.hasTime()">
- <h2>Times</h2>
- <table>
-  <thead>
-   <tr>
-    <th>Date</th>
-    <td>Job Name</td>
-    <th>Type</th>
-    <th>Hours</th>
-    <th>Note</th>
-    <th>Full Resource</th>
-   </tr>
-  </thead>
-  <tbody>
-   <tr ng-repeat="t in time.times"> 
-    <td>{{ t.data.date }}</td>
-    <td>{{ t.data['Job.Time::name'] }}</td>
-    <td>{{ t.data.type }}</td>
-    <td>{{ t.data.hours }}</td>
-    <td>{{ t.data.note }}</td>
-    <td><a href='{{ t.href }}' target=_blank>{{ t.href }}</a></td>
-   </tr>
-  </tbody>
- </table>
-</div>
+<div class='row' ng-controller='timeController as time'>
+ <h1>Times</h1>
+ <div ng-show="time.hasTime() && time.hasJobs()">
+  <p>Below is a listing of the time records you have logged.</p>
+  <form>
+  <table>
+   <thead>
+    <tr>
+     <th>Date</th>
+     <td>Job Name</td>
+     <th>Type</th>
+     <th>Hours</th>
+     <th>Note</th>
+     <th>Full Resource</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr ng-repeat="t in time.times"> 
+     <td><input type='text' ng-model='t.data.date' /></td>
+     <td>
+      <select ng-model='t.data.job_id' ng-options='j.data.job_id as j.data.job_name_c for j in time.jobs'></select>
+     </td>
+     <td>{{ t.data.type }}</td>
+     <td><input type='text' ng-model='t.data.hours' /></td>
+     <td><input type='text' ng-model='t.data.note' /></td>
+     <td><a class='button small' ng-click='time.updateTime(t)'>Update!</a></td>
+    </tr>
+   </tbody>
+  </table>
+  </form>
+ </div>
+ <div ng-show="!time.hasJobs()">
+  <p>You can't enter time because you aren't assigned to any jobs.</p>
+ </div>
 </div>

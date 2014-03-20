@@ -32,6 +32,107 @@ describe "apiService", ->
   When -> @subject.setHeader('Authorization', 'foo')
   Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'foo'
  
+ 
+ ###
+ #       PUT TESTS
+ ###
+ 
+ 
+ describe "put()", ->
+  Given ->
+   @url = 'http://someurl/'
+   @object = {'foo':'bar'}
+   @subject.url = @url
+   
+  describe "with no path provided", ->
+   Given -> 
+    @httpBackend.whenPUT(@url).respond('foo')
+
+   When ->   
+    @subject.put undefined, @object
+    @httpBackend.flush()
+    
+   Then -> @httpBackend.expectPUT(@url,@object) 
+
+  describe "with a path and an object", ->
+   Given ->
+    @path = '/somepath'
+    @httpBackend.whenPUT(@url+@path,@object).respond('foo')
+    
+   describe "with no credentials" , ->
+   
+    When ->
+     @subject.put @path, @object
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectPUT(@url+@path,@object) 
+    Then -> expect(@http.defaults.headers.common['Authorization']).not.toBeDefined()
+   
+   describe "with credentials" , ->
+    
+    When -> 
+     @creds = {auth: 'foo'}
+     @subject.setCredentials @creds
+     @subject.put @path, @object
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectPUT(@url+@path,@object)
+    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds.auth)
+ 
+ 
+ ###
+ #       POST TESTS
+ ###
+ 
+ 
+ describe "post()", ->
+  Given ->
+   @url = 'http://someurl/'
+   @object = {'foo':'bar'}
+   @subject.url = @url
+   
+  describe "with no path provided", ->
+   Given -> 
+    @httpBackend.whenPOST(@url).respond('foo')
+
+   When ->   
+    @subject.post undefined, @object
+    @httpBackend.flush()
+    
+   Then -> @httpBackend.expectPOST(@url,@object) 
+
+  describe "with a path and an object", ->
+   Given ->
+    @path = '/somepath'
+    @httpBackend.whenPOST(@url+@path,@object).respond('foo')
+    
+   describe "with no credentials" , ->
+   
+    When ->
+     @subject.post @path, @object
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectPOST(@url+@path,@object) 
+    Then -> expect(@http.defaults.headers.common['Authorization']).not.toBeDefined()
+   
+   describe "with credentials" , ->
+    
+    When -> 
+     @creds = {auth: 'foo'}
+     @subject.setCredentials @creds
+     @subject.post @path, @object
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectPOST(@url+@path,@object)
+    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds.auth)
+ 
+ 
+
+ ###
+ #       GET TESTS
+ ###
+ 
+ 
  describe "get()", ->
   Given -> 
    @url = 'http://someurl/'

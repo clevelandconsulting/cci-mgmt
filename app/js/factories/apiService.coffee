@@ -17,14 +17,26 @@ class apiService
    if @credentials != ''
     @setHeader('Authorization', 'Basic ' + @credentials.auth) 
   
-  get:(path) ->
+  prepCall: (path)->
    @setAuth()
    path = path || ''
+   path
+  
+  get:(path) ->
+   path = @prepCall path
    @http({method: 'GET', url:@url+path})
    
   checkCredentials: (credentials) ->
    @setHeader('Authorization', 'Basic ' + credentials.auth)
    @http({method: 'GET', url: @url})  
+   
+  put:(path,object) ->
+   path = @prepCall path
+   @http({method: 'PUT', url:@url+path, data:object})
+   
+  post:(path,object) ->
+   path = @prepCall path
+   @http({method: 'POST', url:@url+path, data:object})
 
 
 angular.module('app').factory 'apiService', -> apiService # ['$http', ($http) -> new apiService($http) ]
