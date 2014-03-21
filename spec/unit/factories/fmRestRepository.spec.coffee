@@ -27,4 +27,13 @@ describe "fmRestRepository", ->
  Then -> expect(@subject.path).toEqual(@path)
  Then -> expect(@subject.modelName).toEqual(@modelName)
  
+ describe "getAllForStaff() with a script", ->
+  Given -> 
+   @scriptkey = 'RFMscript'
+   @scriptvalue = 'anyvalue'
+   
+  When -> @subject.getAllForStaff(@staff_id,@scriptvalue)
+  
+  Then -> expect(@mockApi.get).toHaveBeenCalledWith(@path + '.json?RFMsF1=staff_id&RFMs
+V1=' + @staff_id + '&' + @scriptkey + '=' + @scriptvalue )
  

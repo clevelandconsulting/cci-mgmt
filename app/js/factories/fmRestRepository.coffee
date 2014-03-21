@@ -1,8 +1,12 @@
 class fmRestRepository
+  @fieldNameKey: 'RFMsF'
+  @fieldValueKey: 'RFMsV'
+  @scriptKey: 'RFMscript'
+  
   constructor: (@$q, @cciApi, @model, @path, @modelName) ->
    #@path = 'layout/Api-Time'
    
-  getAllForStaff: (staff_id) -> 
+  getAllForStaff: (staff_id, script) -> 
    @d = @$q.defer()
    
    successFn = (response) =>
@@ -13,7 +17,11 @@ class fmRestRepository
       results.push new @model time, fmData.meta[i].href, fmData.meta[i].recordID
     @d.resolve results
    
-   @cciApi.get(@path+'.json?RFMsF1=staff_id&RFMsV1='+staff_id).then successFn, (response) => 
+   path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=staff_id&' + fmRestRepository.fieldValueKey + '1=' + staff_id
+   if script? and script != ''
+    path = path + '&' + fmRestRepository.scriptKey + '='+ script
+    
+   @cciApi.get(path).then successFn, (response) => 
     @d.reject response
    
    @d.promise

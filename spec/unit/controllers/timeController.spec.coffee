@@ -11,6 +11,18 @@ describe "timeController", ->
   @mockNotifications = _notifications_
   @q = $q
   @subject = @controller 'timeController', {$scope:@scope, userRepository:@mockRepo, timeRepository:@mockTimeRepo, staffAssignedRepository: @mockStaffAssigned, notifications:@mockNotifications}
+  today = new Date()
+  dd = today.getDate()
+  mm = today.getMonth()+1
+  yyyy = today.getFullYear()
+
+  if dd<10 
+   dd='0'+dd 
+  
+  if mm<10
+   mm='0'+mm 
+  
+  @today = mm+'/'+dd+'/'+yyyy
   
   @apiResponse = {"data":[{"__guid":"5A5751B4-6F4A-4C7B-BE0E-36493E7CE2D1","job_id":"3B052C63-BE27-433A-94FC-3B82B23ADF44","staff_id":"DC5FB862-E6F0-45FD-AA86-BC9A41003873","billed_flag":"0","type":"Client Support","date":"03\/10\/2014","hours":"500","note":"Client Hand-holding.","__created_ts":"03\/10\/2014 11:35:29","__created_an":"Developer","__modified_ts":"03\/10\/2014 11:35:42","__modified_an":"Developer"}],"meta":[{"recordID":"3","href":"\/RESTfm\/STEVE\/layout\/Time\/3.json"}],"metaField":[{"name":"__guid","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"job_id","autoEntered":0,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"staff_id","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"billed_flag","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"type","autoEntered":0,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"date","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"date"},{"name":"hours","autoEntered":0,"global":0,"maxRepeat":1,"resultType":"number"},{"name":"note","autoEntered":0,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"__created_ts","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"timestamp"},{"name":"__created_an","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"text"},{"name":"__modified_ts","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"timestamp"},{"name":"__modified_an","autoEntered":1,"global":0,"maxRepeat":1,"resultType":"text"}],"info":{"X-RESTfm-Version":"2.0.2\/r291","X-RESTfm-Protocol":"4","X-RESTfm-Status":200,"X-RESTfm-Reason":"OK","X-RESTfm-Method":"GET"}}
   
@@ -35,6 +47,8 @@ describe "timeController", ->
 
  Then -> expect(@subject).toBeDefined()
  Then -> expect(@subject.timeRepository).toBe(@mockTimeRepo)
+ Then -> expect(@subject.gettingTime).toBe(false)
+ Then -> expect(@subject.newtime.date).toBe(@today)
  
  describe "getStaffId() when user exists", ->
   Given ->
@@ -251,7 +265,22 @@ describe "timeController", ->
   Then -> expect(@mockTimeRepo.getAllForStaff).not.toHaveBeenCalledWith(@staffid)
   Then -> expect(@subject.gettingTime).toBe(false)
   Then -> expect(@result).toBe(true)
-  
+ 
+ describe "editTime() for the first time", ->
+  Given -> @expectedTime.editing = undefined
+  When ->  @subject.editTime(@expectedTime)
+  Then -> expect(@expectedTime.editing).toBe(true)
+ 
+ describe "editTime() when it's false", ->
+  Given -> @expectedTime.editing = false
+  When ->  @subject.editTime(@expectedTime)
+  Then -> expect(@expectedTime.editing).toBe(true)
+
+ describe "editTime() when it's true", ->
+  Given -> @expectedTime.editing = true
+  When ->  @subject.editTime(@expectedTime)
+  Then -> expect(@expectedTime.editing).toBe(true)
+
  describe "updateTime()", ->
  
   Given ->
@@ -275,6 +304,7 @@ describe "timeController", ->
     
    Then -> expect(@mockTimeRepo.update).toHaveBeenCalledWith(@expectedTime)
    Then -> expect(@mockNotifications.success).toHaveBeenCalledWith(@successResponse)
+   Then -> expect(@expectedTime.editing).toBe(false)
    
   describe "when the time repo update is not successful", ->
   
@@ -285,4 +315,77 @@ describe "timeController", ->
     
    Then -> expect(@mockTimeRepo.update).toHaveBeenCalledWith(@expectedTime)
    Then -> expect(@mockNotifications.error).toHaveBeenCalledWith(@failureResponse)
+   Then -> expect(@expectedTime.editing).toBe(false)
+
+
+ describe "addTime()", ->
+ 
+  Given ->
+   @subject.times = []
+   @job_id='someid'
+   @subject.staffid = 'someid'
+   @type='sometype'
+   @date='somedate'
+   @hours='somehours'
+   @note='somenote'
+   @successResponse = "some success response"
+   @failureResponse = "some failure response"
+   spyOn(@mockNotifications, "success")
+   spyOn(@mockNotifications, "error")
+   spyOn(@mockTimeRepo, "add").andCallFake =>
+    if @succeedPromise
+     @q.when {msg:@successResponse, data: @newtimemodel}
+    else
+     @q.reject @failureResponse
+   
+  describe "when all data is present", ->
+   Given ->
+    @subject.newtime = {job_id:@job_id,type:@type,date:@date,hours:@hours,note:@note}
+    @newtimemodel = new @mockModel @subject.newtime, '', ''
+    
+   describe "when the time repo add is successful", ->
+    When ->
+     @succeedPromise = true
+     @subject.addTime(@subject.newtime)
+     @scope.$apply()
+     
+    Then -> expect(@mockTimeRepo.add).toHaveBeenCalledWith(@job_id, @subject.staffid, @type, @date, @hours, @note)
+    Then -> expect(@mockNotifications.success).toHaveBeenCalledWith(@successResponse)
+    Then -> expect(@subject.times).toContain(@newtimemodel)
+    Then -> expect(@subject.newtime).toEqual({date:@today})
+    
+   describe "when the time repo add is not successful", ->
+   
+    When ->
+     @succeedPromise = false
+     @subject.addTime(@subject.newtime)
+     @scope.$apply()
+     
+    Then -> expect(@mockTimeRepo.add).toHaveBeenCalledWith(@job_id, @subject.staffid, @type, @date, @hours, @note)
+    Then -> expect(@mockNotifications.error).toHaveBeenCalledWith(@failureResponse)
+    Then -> expect(@subject.times).not.toContain(@newtimemodel)
+    
+  describe "when all job id is missing", ->
+   Given ->
+    @newtime = {job_id:'',type:@type,date:@date,hours:@hours,note:@note}
+    @newtimemodel = new @mockModel @newtime, '', ''
+    
+   When ->
+    @subject.addTime(@newtime)
+    
+   Then -> expect(@mockTimeRepo.add).not.toHaveBeenCalledWith('', @subject.staffid, @type, @date, @hours, @note)
+   Then -> expect(@mockNotifications.error).toHaveBeenCalledWith('A job must be entered')
+   Then -> expect(@subject.times).not.toContain(@newtimemodel)
   
+  describe "when all hours is missing", ->
+   Given ->
+    @newtime = {job_id:@job_id,type:@type,date:@date,hours:'',note:@note}
+    @newtimemodel = new @mockModel @newtime, '', ''
+    
+   When ->
+    @subject.addTime(@newtime)
+    
+   Then -> expect(@mockTimeRepo.add).not.toHaveBeenCalledWith(@job_id, @subject.staffid, @type, @date, '', @note)
+   Then -> expect(@mockNotifications.error).toHaveBeenCalledWith('Hours must be entered')
+   Then -> expect(@subject.times).not.toContain(@newtimemodel)
+    

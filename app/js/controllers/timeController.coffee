@@ -2,16 +2,34 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
  class timeController
   constructor: (@scope, @userRepository, @timeRepository, @staffAssignedRepository, @notifications) ->
    @gettingTime = false
+   @newtime = @initNewTime()
+   
    if !@staffid?
     @getStaffId()
-
+  
+  initNewTime: ()->
+   today = new Date()
+   dd = today.getDate()
+   mm = today.getMonth()+1
+   yyyy = today.getFullYear()
+ 
+   if dd<10 
+    dd='0'+dd 
+   
+   if mm<10
+    mm='0'+mm 
+    
+   { date: mm+'/'+dd+'/'+yyyy}
+  
   getStaffId: -> 
-    @promise = @userRepository.getCurrentUser()
+   successFn = (data) =>
+    @staffid = data.data.__guid
+   @promise = @userRepository.getCurrentUser()
+   
+   @promise.then successFn, (response) => @notifications.error(response.status)
     
-    @promise.then (data) =>
-     @staffid = data.data.__guid
-    
-    @promise
+   
+   @promise
     
   failureMessage: (response, modelName) ->
    isError = true
@@ -49,7 +67,7 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
 
   getTime: ->
    if @staffid?
-    
+
     successFn = (data) =>
      @times = data
     failureFn = (response) =>
@@ -84,10 +102,36 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     true
    else 
     false
-    
+  
+  editTime: (time) ->
+   time.editing = true
+  
   updateTime: (time) ->
+   time.editing = false
    successFn = (msg) => @notifications.success(msg)
    failureFn = (msg) => @notifications.error(msg)
    @timeRepository.update(time).then successFn, failureFn
-
+   
+  addTime: (time) ->
+   
+   successFn = (response) => 
+    @notifications.success(response.msg)
+    if @times?
+     @times.unshift response.data
+    else
+     @times = [response.data]
+     
+    @newtime = @initNewTime()
+   failureFn = (msg) => @notifications.error(msg)
+  
+   if time.job_id? and time.job_id != ''
+    if time.hours? and time.hours != ''
+     @timeRepository.add(time.job_id, @staffid, time.type, time.date, time.hours, time.note).then successFn, failureFn
+    else
+     failureFn('Hours must be entered')
+   else
+    failureFn('A job must be entered')
+   
+   return
+  
 ]

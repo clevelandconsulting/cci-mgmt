@@ -33,7 +33,7 @@ describe "timeRepository", ->
    @promise.then (data) => @result = data
    @rootScope.$apply()
    
-  Then -> expect(@mockApi.get).toHaveBeenCalledWith('layout/Api-Time.json?RFMsF1=staff_id&RFMsV1=' + @staff_id)
+  Then -> expect(@mockApi.get).toHaveBeenCalledWith('layout/Api-Time.json?RFMsF1=staff_id&RFMsV1=' + @staff_id + '&RFMscript=Api-Time.sort')
   Then -> expect(@result).toEqual([@expectedTime])
   
  describe "add()", ->
