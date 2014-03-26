@@ -11,7 +11,9 @@ module.exports = function(lineman) {
 
     // As an example, to override the file patterns for
     // the order in which to load third party JS libs:
-    //
+    webfonts: {
+      root: "fonts"
+    },
     coffee: {
 	    app: [
     	 	"app/js/main.coffee",
@@ -48,7 +50,9 @@ module.exports = function(lineman) {
     sass: {
       vendor: [
          "vendor/bower/foundation/scss/normalize.scss",
-         "vendor/bower/foundation/scss/foundation.scss"
+         "vendor/bower/foundation/scss/foundation.scss",
+         "vendor/fonts/foundation-general-enclosed/sass/general_enclosed_foundicons_ie7.scss",
+         "vendor/fonts/foundation-general-enclosed/sass/general_enclosed_foundicons.scss"
       ]  
     },
     css: {

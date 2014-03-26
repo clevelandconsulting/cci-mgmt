@@ -32,6 +32,51 @@ describe "apiService", ->
   When -> @subject.setHeader('Authorization', 'foo')
   Then -> expect(@http.defaults.headers.common['Authorization']).toBe 'foo'
  
+ ###
+ #       DELETE TESTS
+ ###
+ 
+ 
+ describe "delete()", ->
+  Given ->
+   @url = 'http://someurl/'
+   @subject.url = @url
+   
+  describe "with no path provided", ->
+   Given -> 
+    @httpBackend.whenDELETE(@url).respond('foo')
+
+   When ->   
+    @subject.delete undefined
+    @httpBackend.flush()
+    
+   Then -> @httpBackend.expectDELETE(@url) 
+
+  describe "with a path and an object", ->
+   Given ->
+    @path = '/somepath'
+    @httpBackend.whenDELETE(@url+@path).respond('foo')
+    
+   describe "with no credentials" , ->
+   
+    When ->
+     @subject.delete @path
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectDELETE(@url+@path) 
+    Then -> expect(@http.defaults.headers.common['Authorization']).not.toBeDefined()
+   
+   describe "with credentials" , ->
+    
+    When -> 
+     @creds = {auth: 'foo'}
+     @subject.setCredentials @creds
+     @subject.delete @path
+     @httpBackend.flush()
+    
+    Then -> @httpBackend.expectDELETE(@url+@path)
+    Then -> expect(@http.defaults.headers.common['Authorization']).toEqual('Basic ' + @creds.auth)
+ 
  
  ###
  #       PUT TESTS

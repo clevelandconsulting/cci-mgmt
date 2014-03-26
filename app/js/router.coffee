@@ -6,7 +6,10 @@ angular.module('app').config ['$routeProvider', (routeProvider) ->
  .otherwise {redirectTo:'/time'}
 ]
 
-angular.module('app').run ($rootScope,$location,routeValidation) ->
+angular.module('app').run [ '$rootScope', '$location', 'routeValidation', ($rootScope,$location,routeValidation) ->
+
  routeValidation.addNonValidationRoute '/login'
  
- $rootScope.$on '$routeChangeStart', routeValidation.validateRoute
+ $rootScope.$on '$locationChangeStart', routeValidation.validateRoute
+
+]

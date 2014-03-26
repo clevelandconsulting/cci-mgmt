@@ -1,62 +1,85 @@
 <div class='row' ng-controller='timeController as time'>
  <h1>Times</h1>
- <div ng-show="time.hasJobs() || time.hasTime() ">
-  <p>Below is a listing of the time records you have logged.</p>
-  <form>
-  <table>
-   <thead>
-    <tr>
-     <th>Date</th>
-     <td>Job Name</td>
-     <th>Type</th>
-     <th>Hours</th>
-     <th>Note</th>
-     <th></th>
-    </tr>
-   </thead>
-   <tbody>
-    <tr>
-     <td width='120'><input type='text' ng-model='time.newtime.date' /></td>
-     <td>
-       <select ng-model='time.newtime.job_id' ng-options='j.data.job_id as j.data.job_name_c for j in time.jobs'></select>
-     </td>
-     <td><input type='text' ng-model='time.newtime.type' /></td>
-     <td width='75'><input type='text' ng-model='time.newtime.hours' /></td>
-     <td><input type='text' ng-model='time.newtime.note' /></td>
-     <td><a class='button small' ng-click='time.addTime(time.newtime)'>Add!</a></td>
-    </tr>
-    <tr ng-repeat="t in time.times"> 
-      <td width='120'>
-       <input ng-show='t.editing' type='text' ng-model='t.data.date' />
-       <span ng-hide='t.editing'>{{t.data.date}}</span>
+ <form>
+  <div ng-show="time.hasJobs()">
+   <h3>Add New Time</h3>
+   <table>
+    <thead>
+     <tr>
+      <th>Date</th>
+      <td>Job Name</td>
+      <th>Type</th>
+      <th>Hours</th>
+      <th>Note</th>
+      <th></th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td width='120'><input type='text' ng-model='time.newtime.date' /></td>
+      <td><select ng-model='time.newtime.job_id' ng-options='j.data.job_id as j.data.job_name_c for j in time.jobs.items'></select></td>
+      <td><select ng-model='time.newtime.type' ng-options='t for t in time.timeTypes'></select></td>
+      <td width='75'><input type='text' ng-model='time.newtime.hours' /></td>
+      <td><input type='text' ng-model='time.newtime.note' /></td>
+      <td><a ng-click='time.addTime(time.newtime)'><i class='foundicon-plus large'></i></a></td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div ng-show="!time.hasJobs()">
+   <p>You can't enter time because you aren't assigned to any jobs.</p>
+  </div>
+  <div ng-show='time.hasTime()'>
+   <p>Below is a listing of the time records you have logged.</p>
+   <table>
+    <thead>
+     <tr>
+      <th>Date</th>
+      <td>Job Name</td>
+      <th>Type</th>
+      <th>Hours</th>
+      <th>Note</th>
+      <th></th>
+     </tr>
+    </thead>
+    <tbody >
+     <tr ng-repeat="t in time.times.items"> 
+       <td width='120' ng-show='t.editing'><input ng-show='t.editing' type='text' ng-model='t.data.date' /></td>
+       <td width='120' ng-hide='t.editing'>{{t.data.date}}</td>
+       <td width='200'>
+        <select ng-show='t.editing' ng-model='t.data.job_id' ng-options='j.data.job_id as j.data.job_name_c for j in time.jobs.items'>
+        </select>
+        <span ng-hide='t.editing'>{{t.data['Job.Time::company_name_c']}}: {{t.data['Job.Time::name']}}</span>
+       </td>
+       <td>
+        <select ng-show='t.editing' ng-model='t.data.type' ng-options='t for t in time.timeTypes'></select>
+        <span ng-hide='t.editing'>{{ t.data.type }}</span>
+       </td>
+       <td width='75'>
+        <input ng-show='t.editing' type='text' ng-model='t.data.hours' />
+        <span ng-hide='t.editing'>{{t.data.hours}}</span>
+       </td>
+       <td>
+        <input ng-show='t.editing' type='text' ng-model='t.data.note' />
+        <span ng-hide='t.editing'>{{t.data.note}}</span>
+       </td>
+       <td width='80'>
+        <a ng-show='t.editing' ng-click='time.updateTime(t)'><i class='foundicon-checkmark large'></i></a>
+        <a ng-hide='t.editing' ng-click='time.editTime(t)'><i class="foundicon-edit large"></i></a>&nbsp;
+        <a ng-hide='t.editing' ng-click='time.deleteTime(t)'><i class="foundicon-trash large"></i></a>
+       </td>
+     </tr>
+    </tbody>
+    <tfoot ng-show='time.times.hasPaging()'>
+     <tr>
+      <td colspan='6'>
+       <span class='left start'><a ng-click='time.getTime(time.times.start())'>First</a></span>
+       <span ng-show='time.times.hasPrevious()' class='left previous'>&nbsp;|&nbsp;<a ng-click='time.getTime(time.times.previous())'>Previous</a></span>
+       <span class='right start'><a ng-click='time.getTime(time.times.end())'>Last</a></span>
+       <span ng-show='time.times.hasNext()' class='right next'><a ng-click='time.getTime(time.times.next())'>Next</a>&nbsp;|&nbsp;</span>
       </td>
-      <td width='200'>
-       <select ng-show='t.editing' ng-model='t.data.job_id' ng-options='j.data.job_id as j.data.job_name_c for j in time.jobs'>
-       </select>
-       <span ng-hide='t.editing'>{{t.data['Job.Time::company_name_c']}}: {{t.data['Job.Time::name']}}</span>
-      </td>
-      <td>
-       <input ng-show='t.editing' type='text' ng-model='t.data.type' />
-       <span ng-hide='t.editing'>{{ t.data.type }}</span>
-      </td>
-      <td width='75'>
-       <input ng-show='t.editing' type='text' ng-model='t.data.hours' />
-       <span ng-hide='t.editing'>{{t.data.hours}}</span>
-      </td>
-      <td>
-       <input ng-show='t.editing' type='text' ng-model='t.data.note' />
-       <span ng-hide='t.editing'>{{t.data.note}}</span>
-      </td>
-      <td>
-       <a ng-show='t.editing' class='button small' ng-click='time.updateTime(t)'>Update!</a>
-       <a ng-hide='t.editing' class='button small' ng-click='time.editTime(t)'>Edit</a>
-      </td>
-    </tr>
-   </tbody>
-  </table>
-  </form>
- </div>
- <div ng-show="!time.hasJobs()">
-  <p>You can't enter time because you aren't assigned to any jobs.</p>
- </div>
+     </tr>
+   </table>
+  </div>
+ </form>
 </div>

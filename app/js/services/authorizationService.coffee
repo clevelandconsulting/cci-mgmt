@@ -13,6 +13,7 @@ class authorizationService
    
   checkIfLoggedIn: -> 
    creds = @getStoredCredentials()
+   #console.log 'Checking Creds', creds
    if creds != '' 
     true
    else

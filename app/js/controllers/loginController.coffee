@@ -7,6 +7,7 @@ angular.module('app').controller 'loginController', [ 'authorizationService', 'n
   login: ->
    @loginToastr = @notifications.info 'Logging In...'
    success = (response) => 
+    @location.path('/time')
     @notifications.clear(@loginToastr)
     @notifications.success 'Welcome ' + @username + '!'
     
@@ -17,7 +18,6 @@ angular.module('app').controller 'loginController', [ 'authorizationService', 'n
     
     @userRepository.getUserByUsername(@username).then repoSuccess, repoFailure  
     
-    @location.path('/home')
     
    failure = (response) => 
     @notifications.clear(@loginToastr)

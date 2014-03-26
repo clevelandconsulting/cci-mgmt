@@ -1,8 +1,11 @@
 angular.module('app').controller 'timeController', [ '$scope', 'userRepository', 'timeRepository', 'staffAssignedRepository', 'notifications', 
  class timeController
   constructor: (@scope, @userRepository, @timeRepository, @staffAssignedRepository, @notifications) ->
+   #console.log 'INIT TIME CONTROLLER'
    @gettingTime = false
    @newtime = @initNewTime()
+   @timeTypes = ['Development/Design', 'Project Mgmt', 'Client Support']
+   @pagesize = 10
    
    if !@staffid?
     @getStaffId()
@@ -65,16 +68,20 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    
    @promise
 
-  getTime: ->
-   if @staffid?
-
-    successFn = (data) =>
+  getTime: (path) ->
+  
+   successFn = (data) =>
      @times = data
     failureFn = (response) =>
      @failureMessage(response,'time')
-   
-    @promise = @timeRepository.getAllForStaff(@staffid)
-   
+  
+   if (path? and path != '') || @staffid?
+    if (path? and path != '')
+     path = path.replace '/RESTfm/STEVE/',''
+     @promise = @timeRepository.getAll(path)
+    else if @staffid?
+     @promise = @timeRepository.getAllForStaff(@staffid, @pagesize)
+     
     @promise.then successFn, failureFn
     
     @promise
@@ -117,9 +124,9 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    successFn = (response) => 
     @notifications.success(response.msg)
     if @times?
-     @times.unshift response.data
+     @times.items.unshift response.data
     else
-     @times = [response.data]
+     @times = @timeRepository.newTimes(response.data)
      
     @newtime = @initNewTime()
    failureFn = (msg) => @notifications.error(msg)
@@ -133,5 +140,16 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     failureFn('A job must be entered')
    
    return
+   
+  deleteTime: (time) ->
+   successFn = (msg) => 
+    @notifications.success(msg)
+    for t, i in @times.items
+     if t? and t.href? and t.href == time.href
+      @times.items.splice(i,1)
+   failureFn = (msg) => @notifications.error(msg)
+   
+   if window.confirm 'Do you really want to delete this time?'
+    @timeRepository.delete(time.href).then successFn, failureFn
   
 ]

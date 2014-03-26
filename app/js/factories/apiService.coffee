@@ -37,6 +37,10 @@ class apiService
   post:(path,object) ->
    path = @prepCall path
    @http({method: 'POST', url:@url+path, data:object})
+   
+  delete:(path) ->
+   path = @prepCall path
+   @http({method: 'DELETE',url:@url+path})
 
 
 angular.module('app').factory 'apiService', -> apiService # ['$http', ($http) -> new apiService($http) ]

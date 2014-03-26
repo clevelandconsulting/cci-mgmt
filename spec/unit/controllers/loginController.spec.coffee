@@ -1,10 +1,11 @@
 describe "loginController", ->
  Given -> module('app')
  
- Given angular.mock.inject (authorizationService, notifications, userRepository) ->
+ Given angular.mock.inject (authorizationService, notifications, userRepository, routeValidation) ->
   @mockRestFMAuthorization = authorizationService
   @mockNotifications = notifications
   @mockRepository = userRepository
+  @mockRouteValidation = routeValidation
  
  Given inject ($controller, $rootScope, $q, $location) ->
   @scope = $rootScope.$new()
@@ -26,6 +27,8 @@ describe "loginController", ->
    @subject.password = @password
    @loginToastr = 'foo'
    @loginMessage = "Logging In..."
+   #turn off validation for now
+   spyOn(@mockRouteValidation, "routeRequiresValidation").andReturn(false)
    spyOn(@mockNotifications, "success")
    spyOn(@mockNotifications, "error")
    spyOn(@mockNotifications, "clear")
@@ -59,7 +62,7 @@ describe "loginController", ->
    Then -> expect(@mockNotifications.success).toHaveBeenCalledWith(@msg)
    Then -> expect(@mockRepository.getUserByUsername).toHaveBeenCalledWith(@username)
    Then -> expect(@mockRepository.saveCurrentUserId).toHaveBeenCalledWith(@userId)
-   Then -> expect(@location.path()).toEqual('/home')
+   Then -> expect(@location.path()).toEqual('/time')
   
   describe "with a rejection and no error on the authorization", ->
    Given ->

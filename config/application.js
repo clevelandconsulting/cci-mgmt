@@ -36,6 +36,12 @@ module.exports = function(lineman) {
     // have Ruby installed as well as the `sass` gem. To enable it, comment out the
     // following line:
     //
+     webfonts: {
+      files: {
+        "vendor/fonts/foundation-general-enclosed/fonts/": "vendor/fonts/foundation-general-enclosed/fonts/**/*.*"
+      }
+     },
+    
      enableSass: true,
      
      sass: {
@@ -44,6 +50,7 @@ module.exports = function(lineman) {
 			     loadPath: [
 			     	"vendor/css",
 			     	"vendor/bower/foundation/scss",
+			     	"vendor/fonts/foundation-general-enclosed/sass",
 			     	"app/css"
 			     ]
 		     }
