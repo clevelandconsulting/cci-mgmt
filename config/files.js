@@ -39,6 +39,7 @@ module.exports = function(lineman) {
     	    "vendor/bower/amplify/lib/amplify.js",
     	    "vendor/bower/amplify/lib/amplify.store.js",
          "vendor/bower/angular/angular.js",
+         "vendor/bower/autofill-event/src/autofill-event.js",
          "vendor/bower/angular-route/angular-route.js",
          "vendor/js/**/*.js"  //Note that this glob remains for traditional vendor libs
      ],

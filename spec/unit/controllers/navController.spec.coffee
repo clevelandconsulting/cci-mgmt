@@ -33,6 +33,7 @@ describe "navController", ->
  
  describe "logout()", ->
   Given ->
+   @subject.username = 'anytest'
    @location.path('/home')
    @mockAuth.apiService.credentials = 'somecredentials'
    spyOn(@mockAuth.apiService,"clearCredentials").andCallFake =>
@@ -47,6 +48,7 @@ describe "navController", ->
   Then -> expect(@mockAuth.apiService.credentials).toBe('')
   Then -> expect(@mockRepo.clearCurrentUserId).toHaveBeenCalled()
   Then -> expect(@location.path()).toBe('/login')
+  Then -> expect(@subject.username).not.toBeDefined()
   
  describe "getUsername() when user exists", ->
   Given ->

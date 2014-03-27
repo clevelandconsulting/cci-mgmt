@@ -11,6 +11,7 @@ angular.module('app').controller 'navController', ['$location', 'authorizationSe
   logout: ->
    @authorizationService.doLogout()
    @userRepository.clearCurrentUserId()
+   @username = undefined
    @$location.path('/login')
 
   getUsername: -> 

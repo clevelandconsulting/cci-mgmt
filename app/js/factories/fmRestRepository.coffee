@@ -27,7 +27,20 @@ class fmRestRepository
     path = path + '&' + fmRestRepository.pageKey + '='+ pagesize
     
    @getAll(path)
+  
+  getFailureReason: (info) ->
+   fmstatus = info['X-RESTfm-FM-Status']
+   fmreason = info['X-RESTfm-FM-Reason']
+   reason = info['X-RESTfm-Reason']
+   if fmstatus? && fmreason?
+    msg = fmstatus + ': ' + fmreason
+   else if fmreason? 
+    msg = fmreason
+   else if reason?
+    msg = reason
    
+   msg
+  
   add: (data) ->
    
    d = @$q.defer()
@@ -38,7 +51,7 @@ class fmRestRepository
     d.resolve {msg: msg, data:data }
    errorFn = (response) =>
     msg = "There was a problem adding your " + @modelName + ". "
-    msg = msg + response.data.info['X-RESTfm-Reason']
+    msg = msg + @getFailureReason(response.data.info) #response.data.info['X-RESTfm-Reason']
     d.reject msg
     
    @cciApi.post(@path+'.json', {data: [data]}).then successFn, errorFn
@@ -59,12 +72,7 @@ class fmRestRepository
     if response.status == 404
      msg = "There was a problem updating your " + @modelName + ". Unable to find the record at " + href
     else
-     fmstatus = response.data.info['X-RESTfm-FM-Status']
-     fmreason = response.data.info['X-RESTfm-FM-Reason']
-     if fmstatus?
-      msg = msg + fmstatus + ': ' + fmreason
-     else 
-      msg = msg + fmreason
+     msg = msg +  @getFailureReason(response.data.info)
      
     d.reject msg
    
@@ -79,7 +87,7 @@ class fmRestRepository
     d.resolve "Your " + @modelName + " was successfully deleted!"
    errorFn = (response) =>
     msg = "There was a problem deleting your " + @modelName + ". "
-    msg = msg + response.data.info['X-RESTfm-Reason']
+    msg = msg  + @getFailureReason(response.data.info)
     d.reject msg
     
    d = @$q.defer()

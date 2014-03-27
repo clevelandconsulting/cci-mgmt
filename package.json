@@ -1,7 +1,7 @@
 {
   "name": "cci-mgmt",
-  "title": "An HTML/JS/CSS app",
-  "version": "0.0.1",
+  "title": "CCI Management App",
+  "version": "0.1.0",
   "private": true,
   "author": {
     "name": "Kevin Vile",

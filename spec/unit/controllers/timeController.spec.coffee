@@ -172,6 +172,22 @@ describe "timeController", ->
   Then -> expect(@mockStaffAssigned.getAllForStaff).not.toHaveBeenCalledWith(@staffid)
   Then -> expect(@subject.gettingJobs).toBe(false)
   Then -> expect(@result).toBe(true)
+  
+ describe "hasJobs() when staffid does not exist, jobs does not exist", ->
+  
+  Given ->
+   @staffid = undefined
+  
+  When ->
+   @promiseSucceeds = true
+   @subject.staffid = @staffid 
+   @subject.jobs = undefined
+   @subject.gettingJobs = false
+   @result = @subject.hasJobs()
+  
+  Then -> expect(@mockStaffAssigned.getAllForStaff).not.toHaveBeenCalledWith(@staffid)
+  Then -> expect(@subject.gettingJobs).toBe(false)
+  Then -> expect(@result).toBe(false)
 
 
 
@@ -301,6 +317,25 @@ describe "timeController", ->
   Then -> expect(@mockTimeRepo.getAllForStaff).not.toHaveBeenCalledWith(@staffid, @pagesize)
   Then -> expect(@subject.gettingTime).toBe(false)
   Then -> expect(@result).toBe(true)
+  
+ describe "hasTime() when staffid does not exist, times does not exists", ->
+  
+  Given ->
+   @staffid = undefined
+   @pagesize = 'pagesize'
+  
+  When ->
+   @promiseSucceeds = true
+   @subject.staffid = @staffid
+   @subject.pagesize = @pagesize
+   @subject.times = undefined
+   @subject.gettingTime = false
+   @result = @subject.hasTime()
+  
+  Then -> expect(@mockTimeRepo.getAllForStaff).not.toHaveBeenCalledWith(@staffid, @pagesize)
+  Then -> expect(@subject.gettingTime).toBe(false)
+  Then -> expect(@result).toBe(false)
+
  
  describe "editTime() for the first time", ->
   Given -> @expectedTime.editing = undefined

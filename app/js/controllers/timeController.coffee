@@ -71,9 +71,9 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
   getTime: (path) ->
   
    successFn = (data) =>
-     @times = data
-    failureFn = (response) =>
-     @failureMessage(response,'time')
+    @times = data
+   failureFn = (response) =>
+    @failureMessage(response,'time')
   
    if (path? and path != '') || @staffid?
     if (path? and path != '')
@@ -85,9 +85,11 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     @promise.then successFn, failureFn
     
     @promise
+   else
+    'blahohioe'
    
   hasJobs: ->
-   if !@gettingJobs and !@jobs?
+   if !@gettingJobs and !@jobs? and @staffid
     @promise = @getJobs()
     @promise.then (data) =>
      @gettingJobs = false
@@ -99,7 +101,7 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     false
    
   hasTime: ->
-   if !@gettingTime and !@times?
+   if !@gettingTime and !@times? and @staffid
     @promise = @getTime()
     @promise.then (data) =>
      @gettingTime = false

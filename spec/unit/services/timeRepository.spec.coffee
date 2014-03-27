@@ -115,8 +115,9 @@ describe "timeRepository", ->
  describe "delete()", ->
   Given ->
    @reason = 'some reason'
+   @reasoncode = 101
    @successfulApiResponse = {"data": [],"meta": [],"info": {"X-RESTfm-Version": "2.0.1\/r280","X-RESTfm-Protocol": "4","X-RESTfm-Status": 200,"X-RESTfm-Reason": "OK","X-RESTfm-Method": "DELETE"}}
-   @errorApiResponse = {"data": [],"meta": [],"info": {"X-RESTfm-FM-Status": "101","X-RESTfm-FM-Reason": "Record is missing","X-RESTfm-Version": "2.0.1\/r280","X-RESTfm-Protocol": "4","X-RESTfm-Status": 404,"X-RESTfm-Reason": @reason,"X-RESTfm-Method": "DELETE"}}
+   @errorApiResponse = {"data": [],"meta": [],"info": {"X-RESTfm-FM-Status": @reasoncode ,"X-RESTfm-FM-Reason": @reason,"X-RESTfm-Version": "2.0.1\/r280","X-RESTfm-Protocol": "4","X-RESTfm-Status": 404,"X-RESTfm-Reason": 'some rest reason',"X-RESTfm-Method": "DELETE"}}
    spyOn(@mockApi,"delete").andCallFake @apiResponseFunction
   
   
@@ -148,7 +149,7 @@ describe "timeRepository", ->
     @rootScope.$apply()
     
    Then -> expect(@mockApi.delete).toHaveBeenCalledWith(@expectedCalledPath)
-   Then -> expect(@result).toEqual("There was a problem deleting your " + @modelName + ". " + @reason)
+   Then -> expect(@result).toEqual("There was a problem deleting your " + @modelName + ". " + @reasoncode + ": " + @reason)
    
 
 
