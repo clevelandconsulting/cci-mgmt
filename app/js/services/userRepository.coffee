@@ -14,21 +14,27 @@ angular.module('app').service 'userRepository', [ '$q', 'cciApiService', 'user',
     
  
   getUser: (path) ->
-   @d = @$q.defer()
+   #console.log 'getUser', path
+   
+   d = @$q.defer()
    
    success = (response) =>
+    #console.log 'getUser Success', response
     try 
-     @newUser = @createUser response
-     @userStorage.addUser(@newUser)
-     @d.resolve @newUser
-    catch e then @d.reject e.message
+     newUser = @createUser response
+     #console.log 'newUser', newUser
+     @userStorage.addUser(newUser)
+     d.resolve newUser
+    catch e then d.reject e.message
     finally
    
-   failure = (response) => @d.reject response
+   failure = (response) =>
+    #console.log 'getUser Failure', response 
+    d.reject response
    
    @cciApi.get(path).then success, failure
    
-   @d.promise
+   d.promise
   
   getUserById: (userid) ->
    users = @userStorage.getUsers()
@@ -54,11 +60,14 @@ angular.module('app').service 'userRepository', [ '$q', 'cciApiService', 'user',
       break
    
    if foundUser == undefined
-    @getUser(@path + '.json?RFMsF1=filemaker_accountname&RFMsV1=' + username)   
+    result = @getUser(@path + '.json?RFMsF1=filemaker_accountname&RFMsV1=' + username)   
    else
-    @d = @$q.defer()
-    @d.resolve foundUser
-    @d.promise
+    d = @$q.defer()
+    d.resolve foundUser
+    result = d.promise
+   
+   #console.log 'getUserByUsername', username, result
+   result
   
   getCurrentUser: ->
    userid = @getCurrentUserId()

@@ -7,13 +7,16 @@ angular.module('app').controller 'loginController', [ 'authorizationService', 'n
   login: ->
    @loginToastr = @notifications.info 'Logging In...'
    success = (response) => 
-    @location.path('/time')
+    #console.log 'login success', response
     @notifications.clear(@loginToastr)
     @notifications.success 'Welcome ' + @username + '!'
     
     repoSuccess = (data) =>
+     #console.log 'username retrieved success', data
      @userRepository.saveCurrentUserId(data.recordID)
+     @location.path('/time')
     repoFailure = (data) =>
+     #console.log 'username retrieved problem', data
      @notifications.error 'Problem getting your username...' + data
     
     @userRepository.getUserByUsername(@username).then repoSuccess, repoFailure  
@@ -26,7 +29,8 @@ angular.module('app').controller 'loginController', [ 'authorizationService', 'n
     else
      @userRepository.clearCurrentUserId()
      @notifications.error "That's not a valid username and password."
-    
+   
+   #console.log 'doing login...'
    @auth.doLogin(@username,@password).then success, failure
    
 ]

@@ -18,15 +18,26 @@ class fmRestRepository
     d.reject response
    
    d.promise
-   
-  getAllForStaff: (staff_id, script, pagesize) -> 
-   path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=staff_id&' + fmRestRepository.fieldValueKey + '1=' + staff_id
+  
+  getAllWithScript: (path, script, pagesize) -> 
+   if !path? || path == ''
+    path = @path+'.json?'
    if script? and script != ''
-    path = path + '&' + fmRestRepository.scriptKey + '='+ script
+    if path.slice(-1) != '?'
+     path = path + '&'
+    path = path + fmRestRepository.scriptKey + '='+ script
    if pagesize? and pagesize != ''
-    path = path + '&' + fmRestRepository.pageKey + '='+ pagesize
+    if path.slice(-1) != '?'
+     path = path + '&'
+    path = path  + fmRestRepository.pageKey + '='+ pagesize
     
    @getAll(path)
+
+  
+  getAllForStaff: (staff_id, script, pagesize) -> 
+   path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=staff_id&' + fmRestRepository.fieldValueKey + '1=' + staff_id
+
+   @getAllWithScript(path, script, pagesize)
   
   getFailureReason: (info) ->
    fmstatus = info['X-RESTfm-FM-Status']

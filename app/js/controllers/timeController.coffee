@@ -1,10 +1,11 @@
-angular.module('app').controller 'timeController', [ '$scope', 'userRepository', 'timeRepository', 'staffAssignedRepository', 'notifications', 
+angular.module('app').controller 'timeController', [ '$scope', 'userRepository', 'timeRepository', 'timeTypeRepository', 'staffAssignedRepository', 'notifications', 
  class timeController
-  constructor: (@scope, @userRepository, @timeRepository, @staffAssignedRepository, @notifications) ->
+  constructor: (@scope, @userRepository, @timeRepository, @timeTypeRepository, @staffAssignedRepository, @notifications) ->
    #console.log 'INIT TIME CONTROLLER'
    @gettingTime = false
    @newtime = @initNewTime()
-   @timeTypes = ['Development/Design', 'Project Mgmt', 'Client Support']
+   @getTimeTypes()
+   #@timeTypes = ['Development/Design', 'Project Mgmt', 'Client Support']
    @pagesize = 10
    
    if !@staffid?
@@ -53,6 +54,20 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     @notifications.error(msg)
    else
     @notifications.info(msg)
+
+  getTimeTypes: ->
+   successFn = (data) =>
+    @timeTypes = data
+   failureFn = (response) =>
+    @failureMessage(response,'time types')
+    #msg = "There was a problem. " + response
+    #@notifications.error msg
+    
+   @promise = @timeTypeRepository.getAllSorted()
+   
+   @promise.then successFn, failureFn
+   
+   @promise
 
   getJobs: ->
    successFn = (data) =>
