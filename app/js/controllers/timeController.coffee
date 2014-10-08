@@ -77,7 +77,7 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     #msg = "There was a problem. " + response
     #@notifications.error msg
     
-   @promise = @staffAssignedRepository.getAllForStaff(@staffid)
+   @promise = @staffAssignedRepository.getAllForStaff(@staffid, '', 1000)
    
    @promise.then successFn, failureFn
    
