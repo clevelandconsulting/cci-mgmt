@@ -82,4 +82,49 @@
    </table>
   </div>
  </form>
+ <div ng-show='time.canSeeOthers()'>
+  <h3>Other People's Time</h3>
+   <div class='row'>
+    <div class='columns small-8'>
+     <span>Select Person:</span><select ng-model='otherStaffId' ng-options='t.data.__guid as t.data.full_name_c for t in time.staff.items | orderBy:"data.full_name_c"'></select></div><div class='small-3 columns'><span class='right start'>Items Per Page:<input style='display: inline' type='text' ng-model='pagesize' size='3'></span></div>
+   </div>
+   <div ng-hide='!time.staffTimes'>
+    <table>
+    <thead>
+     <tr>
+      <th>Date</th>
+      <td>Job Name</td>
+      <th>Type</th>
+      <th>Hours</th>
+      <th>Note</th>
+     </tr>
+    </thead>
+    <tbody >
+     <tr ng-repeat="t in time.staffTimes.items"> 
+       <td width='120'>{{t.data.date}}</td>
+       <td><span>{{t.data['job_name_complete_c']}}</span></td>
+       <td width='200'><span>{{ t.data.type }}</span></td>
+       <td width='75'><span >{{t.data.hours}}</span></td>
+       <td><span>{{t.data.note}}</span></td>
+     </tr>
+    </tbody>
+    <tfoot ng-show='time.staffTimes.hasPaging()'>
+     <tr>
+      <td colspan='2'>
+       <span class='left start'><a ng-click='time.getTimeForStaff("",time.staffTimes.start())'>First</a></span>
+       <span ng-show='time.staffTimes.hasPrevious()' class='left previous'>&nbsp;|&nbsp;<a ng-click='time.getTimeForStaff("",time.staffTimes.previous())'>Previous</a></span>
+       
+      </td>
+      <td colspan='2'>
+       <span class='right start'>Total: {{time.staffTimes.totalByKey('hours')}}hrs</span>
+      </td>
+      <td>
+       <span class='right start'><a ng-click='time.getTimeForStaff("",time.staffTimes.end())'>Last</a></span>
+       <span ng-show='time.staffTimes.hasNext()' class='right next'><a ng-click='time.getTimeForStaff("",time.staffTimes.next())'>Next</a>&nbsp;|&nbsp;</span>
+      </td>
+     </tr>
+   </table>
+   <div>
+   
+ </div>
 </div>

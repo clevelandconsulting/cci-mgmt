@@ -7,5 +7,9 @@ angular.module('app').factory 'user', [ 'fmRestModel', (fmRestModel) -> class us
    @username = @data.filemaker_accountname
   else
    throw Error 'Invalid data for user'
-   
+  
+  if @data.filemaker_accountprivilege == '[Full Access]'
+   @canSeeOthers = true
+  else
+   @canSeeOthers = false
 ]

@@ -54,6 +54,42 @@ describe "fmRestList", ->
   Then -> expect(@subject.nav).toEqual(@expectedNav)
   Then -> expect(@subject.items).toEqual(@expectedItems)
  
+ 
+ describe "totalByKey()", ->
+  Given ->
+   @expectedNav = {start:@fullNav[0].href,prev:@fullNav[1].href,next:@fullNav[2].href,end:@fullNav[3].href}
+   @expectedItems = [@model1,@model2,@model3]
+   @subject = @subject = new @objectClass(@fullObject,@mockModel)
+ 
+	 describe "with a valid key", ->
+	  Given ->
+	   @key = "hours"
+	   @total = parseFloat(@model1.data.hours) + parseFloat(@model2.data.hours) + parseFloat(@model3.data.hours)
+	   
+	  When -> @result = @subject.totalByKey(@key)
+	  
+	  Then -> expect(@result).toEqual(@total)
+	  
+	 describe "with an invalid key", ->
+	  Given ->
+	   @key = "notvalidkey"
+	   @total = 0
+	   
+	  When -> @result = @subject.totalByKey(@key)
+	  
+	  Then -> expect(@result).toEqual(@total)
+	  
+	 describe "with a valid non-numeric key", ->
+	  Given ->
+	   @key = "note"
+	   @total = 0
+	   
+	  When -> @result = @subject.totalByKey(@key)
+	  
+	  Then -> expect(@result).toEqual(@total)
+
+
+ 
  describe "next() when it exists", ->
   Given ->
    @subject = new @objectClass(@fullNav) 

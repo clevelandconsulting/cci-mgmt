@@ -1,6 +1,6 @@
-angular.module('app').controller 'timeController', [ '$scope', 'userRepository', 'timeRepository', 'timeTypeRepository', 'staffAssignedRepository', 'notifications', 
+angular.module('app').controller 'timeController', [ '$scope', 'userRepository', 'timeRepository', 'timeTypeRepository', 'staffAssignedRepository', 'notifications', 'staffRepository', 
  class timeController
-  constructor: (@scope, @userRepository, @timeRepository, @timeTypeRepository, @staffAssignedRepository, @notifications) ->
+  constructor: (@scope, @userRepository, @timeRepository, @timeTypeRepository, @staffAssignedRepository, @notifications, @staffRepository) ->
    #console.log 'INIT TIME CONTROLLER'
    @gettingTime = false
    @newtime = @initNewTime()
@@ -10,6 +10,20 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    
    if !@staffid?
     @getStaffId()
+   
+   @scope.pagesize = 25
+   
+   @scope.$watch('otherStaffId', (newVal, oldVal, scope) =>
+    #console.log 'watch triggered', newVal
+    if newVal?
+     @getTimeForStaff(newVal)
+   )
+   
+   @scope.$watch('pagesize', (newVal, oldVal, scope) =>
+    #console.log 'watch triggered', newVal
+    if newVal? && scope.otherStaffId
+     @getTimeForStaff(scope.otherStaffId)
+   )
   
   initNewTime: ()->
    today = new Date()
@@ -28,13 +42,21 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
   getStaffId: -> 
    successFn = (data) =>
     @staffid = data.data.__guid
+    @currentUser = data
    @promise = @userRepository.getCurrentUser()
    
    @promise.then successFn, (response) => @notifications.error(response.status)
     
-   
    @promise
-    
+  
+  canSeeOthers: -> 
+   result = @currentUser.canSeeOthers
+   if result and !@staff and !@staffRequested and !@timeTypesProcessing
+    @getStaff()
+    @staffRequested = true
+   
+   result
+  
   failureMessage: (response, modelName) ->
    isError = true
    if response.data? && response.data.info?
@@ -57,13 +79,32 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
 
   getTimeTypes: ->
    successFn = (data) =>
+    @timeTypesProcessing = false
     @timeTypes = data
    failureFn = (response) =>
+    @timeTypesProcessing = false
     @failureMessage(response,'time types')
     #msg = "There was a problem. " + response
     #@notifications.error msg
     
    @promise = @timeTypeRepository.getAllSorted()
+   
+   @timeTypesProcessing = true
+   
+   @promise.then successFn, failureFn
+   
+   @promise
+  
+  
+  getStaff: ->
+   successFn = (data) =>
+    @staff = data
+   failureFn = (response) =>
+    @failureMessage(response,'staff')
+    #msg = "There was a problem. " + response
+    #@notifications.error msg
+    
+   @promise = @staffRepository.getAllSorted()
    
    @promise.then successFn, failureFn
    
@@ -102,7 +143,31 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
     @promise
    else
     'blahohioe'
+    
+    
+  getTimeForStaff: (staffid,path) ->
    
+   pagesize = 25
+   if @scope.pagesize?
+    pagesize = @scope.pagesize
+   
+   successFn = (data) =>
+    @staffTimes = data
+   failureFn = (response) =>
+    @failureMessage(response,'time')
+  
+
+   if (path? and path != '')
+    path = path.replace '/RESTfm/STEVE/',''
+    @promise = @timeRepository.getAll(path)
+   else 
+    @promise = @timeRepository.getAllForStaff(staffid, pagesize)
+     
+   @promise.then successFn, failureFn
+    
+   @promise
+
+
   hasJobs: ->
    if !@gettingJobs and !@jobs? and @staffid
     @promise = @getJobs()

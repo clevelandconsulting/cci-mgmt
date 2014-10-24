@@ -2,9 +2,13 @@ angular.module('app').service 'timeRepository', [ '$q', 'fmRestModel', 'fmRestLi
  class timeRepository extends fmRestRepository
   constructor : -> 
    super($q, cciApiService, fmRestModel, fmRestList, 'layout/Api-Time', 'time')
+   @sortScript = 'Api-Time.sort'
   
   getAllForStaff: (staff_id, pagesize) ->
-   super(staff_id,'Api-Time.sort', pagesize)
+   super(staff_id,@sortScript, pagesize)
+   
+  getAllForJob: (job_id, pagesize) ->
+   @getAllByKey('job_id', job_id, @sortScript, pagesize)
   
   add:(job_id, staff_id, type, date, hours, note) ->
    time = new @model {date:date,hours:hours,job_id:job_id,staff_id:staff_id,type:type,note:note},'',''

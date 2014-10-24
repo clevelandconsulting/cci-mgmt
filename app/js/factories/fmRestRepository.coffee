@@ -34,10 +34,15 @@ class fmRestRepository
    @getAll(path)
 
   
-  getAllForStaff: (staff_id, script, pagesize) -> 
-   path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=staff_id&' + fmRestRepository.fieldValueKey + '1=' + staff_id
+  getAllByKey: (keyField, keyValue, script, pagesize) ->
+   path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=' + keyField + '&' + fmRestRepository.fieldValueKey + '1=' + keyValue
 
    @getAllWithScript(path, script, pagesize)
+  
+  getAllForStaff: (staff_id, script, pagesize) -> 
+   #path = @path+'.json?' + fmRestRepository.fieldNameKey + '1=staff_id&' + fmRestRepository.fieldValueKey + '1=' + staff_id
+
+   @getAllByKey('staff_id', staff_id, script, pagesize)
   
   getFailureReason: (info) ->
    fmstatus = info['X-RESTfm-FM-Status']

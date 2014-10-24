@@ -13,6 +13,7 @@ describe "timeRepository", ->
   @expectedTime = new @mockModel @apiResponse.data.data[0], @apiResponse.data.meta[0].href, @apiResponse.data.meta[0].recordID
   @expectedTimeId = @expectedTime.recordID
   @staff_id = @expectedTime.data.staff_id  #'DC5FB862-E6F0-45FD-AA86-BC9A41003873'
+  @job_id = @expectedTime.data.job_id
   @expectedList = new @mockList()
   @expectedList.items = [@expectedTime]
   @apiResponseFunction = (path) =>
@@ -61,7 +62,31 @@ describe "timeRepository", ->
   Then -> expect(@result).toEqual(@expectedList)
   
 
-
+ describe "getAllForJob() with no page size", ->
+  Given ->
+   @succeedPromise = true 
+  
+  When ->
+   @promise = @subject.getAllForJob(@job_id)
+   @promise.then (data) => @result = data
+   @rootScope.$apply()
+   
+  Then -> expect(@mockApi.get).toHaveBeenCalledWith('layout/Api-Time.json?RFMsF1=job_id&RFMsV1=' + @job_id + '&RFMscript=Api-Time.sort')
+  Then -> expect(@result).toEqual(@expectedList)
+  
+ 
+ describe "getAllForJob() with a page size", ->
+  Given ->
+   @succeedPromise = true 
+   @pagesize = 'anything'
+   
+  When ->
+   @promise = @subject.getAllForJob(@job_id, @pagesize)
+   @promise.then (data) => @result = data
+   @rootScope.$apply()
+   
+  Then -> expect(@mockApi.get).toHaveBeenCalledWith('layout/Api-Time.json?RFMsF1=job_id&RFMsV1=' + @job_id + '&RFMscript=Api-Time.sort&RFMmax=' + @pagesize)
+  Then -> expect(@result).toEqual(@expectedList)
 
 
  describe "add()", ->

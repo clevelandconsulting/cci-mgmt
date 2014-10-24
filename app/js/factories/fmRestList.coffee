@@ -28,6 +28,16 @@ class fmRestList
   if @nav?
    @nav[key]
  
+ totalByKey: (key) ->
+  total = 0
+  for item in @items
+   if item.data[key]?
+    value = parseFloat(item.data[key])
+    if !isNaN(value) && isFinite(item.data[key])
+     total = total + value
+  
+  return total
+  
  next: ->
   @getNav('next')
    

@@ -10,11 +10,25 @@ describe "user", ->
    @data = {somekey:'somedata', filemaker_accountname: 'someusername' }
    @href = 'somehref'
    @recordNumber = 0
-   
-  When -> @subject = new @userClass @data, @href, @recordNumber 
   
-  Then -> expect(@subject.username).toEqual(@data.filemaker_accountname)
- 
+  describe "when privilege set is [Full Access]", ->
+   Given ->
+    @data.filemaker_accountprivilege = "[Full Access]"
+    
+   When -> @subject = new @userClass @data, @href, @recordNumber
+    
+   Then -> expect(@subject.username).toEqual(@data.filemaker_accountname)
+   Then -> expect(@subject.canSeeOthers).toBeTruthy()
+  
+  describe "when privilege set is not [Full Access]", ->
+   Given ->
+    @data.filemaker_accountprivilege = "Administrator"
+    
+   When -> @subject = new @userClass @data, @href, @recordNumber
+   
+   Then -> expect(@subject.username).toEqual(@data.filemaker_accountname)
+   Then -> expect(@subject.canSeeOthers).toBeFalsy()
+   
  describe "constructor with data that has no username, href, and record number", ->
   Given ->
    @data = {}

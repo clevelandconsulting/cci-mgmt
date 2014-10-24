@@ -8,7 +8,7 @@ angular.module('app').service 'userRepository', [ '$q', 'cciApiService', 'user',
     d = apiResponse.data.data[0]
     h = apiResponse.data.meta[0].href
     r = apiResponse.data.meta[0].recordID
-    new @user d, h, r
+    return new @user d, h, r
    catch e then throw Error 'Invalid API Response'
    finally
     
