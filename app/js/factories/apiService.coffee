@@ -1,5 +1,5 @@
 class apiService
-  constructor: ($http) -> 
+  constructor: ($http, @q) -> 
    @url = '' 
    @credentials = ''
    @http = $http
@@ -13,9 +13,25 @@ class apiService
   
   setHeader: (name,value) ->
    @http.defaults.headers.common[name] = value
+   
   setAuth: ->
    if @credentials != ''
     @setHeader('Authorization', 'Basic ' + @credentials.auth) 
+  
+  isAvailable: ->
+   d = @q.defer()
+   @get()
+   .then (response) =>
+    #console.log 'get response', response
+    d.resolve true
+   .catch (response) =>
+    #console.log 'get catch', response
+    if response.data.data? && response.data.info && response.data.meta
+     d.resolve true
+    else
+     d.reject response
+     
+   d.promise
   
   prepCall: (path)->
    @setAuth()

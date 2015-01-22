@@ -11,7 +11,8 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    if !@staffid?
     @getStaffId()
    
-   @scope.pagesize = 25
+   @scope.staffpagesize = 25
+   @scope.jobpagesize = 25
    
    @scope.$watch('otherStaffId', (newVal, oldVal, scope) =>
     #console.log 'watch triggered', newVal
@@ -19,10 +20,22 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
      @getTimeForStaff(newVal)
    )
    
-   @scope.$watch('pagesize', (newVal, oldVal, scope) =>
+   @scope.$watch('otherJobId', (newVal, oldVal, scope) =>
+    #console.log 'watch triggered', newVal
+    if newVal?
+     @getTimeForJob(newVal)
+   )
+   
+   @scope.$watch('staffpagesize', (newVal, oldVal, scope) =>
     #console.log 'watch triggered', newVal
     if newVal? && scope.otherStaffId
      @getTimeForStaff(scope.otherStaffId)
+   )
+   
+   @scope.$watch('jobpagesize', (newVal, oldVal, scope) =>
+    #console.log 'watch triggered', newVal
+    if newVal? && scope.otherJobId
+     @getTimeForJob(scope.otherJobId)
    )
   
   initNewTime: ()->
@@ -57,13 +70,17 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    
    result
   
-  failureMessage: (response, modelName) ->
+  failureMessage: (response, modelName, retrievalName) ->
    isError = true
+   
+   if !retrievalName?
+    retrievalName = "staff member"
+   
    if response.data? && response.data.info?
     
     if parseInt(response.data.info['X-RESTfm-FM-Status']) == 401
      isError = false
-     msg = "No " + modelName + " records were found for this staff member."
+     msg = "No " + modelName + " records were found for this " + retrievalName + "."
     else
      msg = 'Trying to get ' + modelName + ' records for ' + @staffid + '. Server returned ' + response.data.info['X-RESTfm-FM-Reason']
     
@@ -112,6 +129,7 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
 
   getJobs: ->
    successFn = (data) =>
+    #console.log 'Jobs', data
     @jobs = data
    failureFn = (response) =>
     @failureMessage(response,'job')
@@ -125,38 +143,26 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    @promise
 
   getTime: (path) ->
-  
    successFn = (data) =>
     @times = data
    failureFn = (response) =>
     @failureMessage(response,'time')
-  
-   if (path? and path != '') || @staffid?
-    if (path? and path != '')
-     path = path.replace '/RESTfm/STEVE/',''
-     @promise = @timeRepository.getAll(path)
-    else if @staffid?
-     @promise = @timeRepository.getAllForStaff(@staffid, @pagesize)
-     
-    @promise.then successFn, failureFn
     
-    @promise
-   else
-    'blahohioe'
-    
-    
-  getTimeForStaff: (staffid,path) ->
+   @getTimeWithStaff(@staffid,path,@pagesize,successFn,failureFn)
    
+  getTimeForStaff: (staffid,path) ->
    pagesize = 25
-   if @scope.pagesize?
-    pagesize = @scope.pagesize
+   if @scope.staffpagesize?
+    pagesize = @scope.staffpagesize
    
    successFn = (data) =>
     @staffTimes = data
    failureFn = (response) =>
     @failureMessage(response,'time')
-  
+   
+   @getTimeWithStaff(staffid,path,pagesize,successFn,failureFn)
 
+  getTimeWithStaff: (staffid,path,pagesize,successFn,failureFn) ->
    if (path? and path != '')
     path = path.replace '/RESTfm/STEVE/',''
     @promise = @timeRepository.getAll(path)
@@ -166,8 +172,33 @@ angular.module('app').controller 'timeController', [ '$scope', 'userRepository',
    @promise.then successFn, failureFn
     
    @promise
+  
+  getTimeForJob: (jobid,path) ->
+   pagesize = 25
+   if @scope.jobpagesize?
+    pagesize = @scope.jobpagesize
+   
+   successFn = (data) =>
+    #console.log 'Job Times', data
+    @jobTimes = data
+   failureFn = (response) =>
+    @failureMessage(response,'time', 'job')
+   
+   @getTimeWithJob(jobid,path,pagesize,successFn,failureFn)
+  
+  getTimeWithJob: (jobid,path,pagesize,successFn,failureFn) ->
+   if (path? and path != '')
+    path = path.replace '/RESTfm/STEVE/',''
+    @promise = @timeRepository.getAll(path)
+   else 
+    #console.log 'Getting Time For', jobid, pagesize
+    @promise = @timeRepository.getAllForJob(jobid, pagesize)
+     
+   @promise.then successFn, failureFn
+    
+   @promise
 
-
+   
   hasJobs: ->
    if !@gettingJobs and !@jobs? and @staffid
     @promise = @getJobs()

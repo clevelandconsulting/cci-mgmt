@@ -3,6 +3,17 @@ class authorizationService
    @init()
    
   init: -> 
+   @checking = true
+   @available = false
+   @apiService.isAvailable()
+   .then (response) =>
+    @checking = false
+    @available = response
+   .catch (error) =>
+    @checking = false
+    
+    
+    
    @lastError = 0
    credentials = @credentialStorageService.get()
    if credentials != ''
